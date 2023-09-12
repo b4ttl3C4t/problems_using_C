@@ -1,71 +1,14 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 
-struct Matrix 
-{
-	int **data;
-	unsigned int length;
-};
-
-void malloc_matrix(struct Matrix *, unsigned int);
-void scanf_matrix(struct Matrix *, unsigned int);
-void print_matrix(struct Matrix *, unsigned int);
-
 void lab_1(int);
 void lab_2(int);
 void lab_3(int *);
-void lab_4(struct Matrix *, struct Matrix *, unsigned int);
+void lab_4(void);
 
 int main(void)
-{
-	int arr[10] = {10, 15, 23, 15, 55, 75, 55, 15, 55, 1112};
-	int length = 4;
-	
-	struct Matrix X, Y;
-	malloc_matrix(&X, length);
-	malloc_matrix(&Y, length);
-	scanf_matrix(&X, length);
-	print_matrix(&X, length);
-	lab_4(&X, &Y, 4);
-}
-
-void malloc_matrix(struct Matrix *X, unsigned int length)
-{
-	X->data = (int **)calloc(length, sizeof(int **));
-	
-	int i;
-	for(i = 0; i < length; ++i)
-	{
-		X->data[i] = (int *)calloc(length, sizeof(int *));
-	}
-}
-
-void scanf_matrix(struct Matrix *X, unsigned int length)
-{
-	int i, j;
-	for(i = 0; i < length; ++i)
-	{
-		for(j = 0; j < length; ++j)
-		{
-			scanf("%d", X->data[i][j]);
-		}
-	}
-	/*1 3 5 7 9 11 13 15 17 19 21 23 25 27 29 31
-	  0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30*/
-}
-
-void print_matrix(struct Matrix *X, unsigned int length)
-{
-	int i, j;
-	
-	for(i = 0; i < length; ++i)
-	{
-		for(j = 0; j < length; ++j)
-		{
-			printf("%d ", X->data[i][j]);
-		}
-		printf("\n");
-	}
+{	
+	lab_4();
 }
 
 void lab_1(int height)
@@ -155,24 +98,56 @@ void lab_3(int *arr)
 		}
 	}
 	printf("%d", summation);
+
+	//test data: int arr[10] = {10, 15, 23, 15, 55, 75, 55, 15, 55, 1112};
 }
 
-void lab_4(struct Matrix *X, struct Matrix *Y, unsigned int length)
+void lab_4(void)
 {
-	int i, j, k;
+	unsigned int length, i, j, k;
 	
-	struct Matrix result;
-	malloc_matrix(&result, length);
+	scanf("%u", &length);
+
+	int X[8][8] = {0}, Y[8][8] = {0}, product[8][8] = {0};
 	
+	for(i = 0; i < length; ++i)
+	{
+		for(j = 0; j < length; ++j)
+		{
+			scanf("%d ", &X[i][j]);
+		}
+	}
+
+	for(i = 0; i < length; ++i)
+	{
+		for(j = 0; j < length; ++j)
+		{
+			scanf("%d ", &Y[i][j]);
+		}
+	}
+
 	for(i = 0; i < length; ++i)
 	{
 		for(j = 0; j < length; ++j)
 		{
 			for(k = 0; k < length; ++k)
 			{
-				result.data[i][k] += X->data[i][j] * Y->data[j][k];
+				product[i][k] += X[i][j] * Y[j][k];
 			}
 		}
 	}
-	print_matrix(&result, length);
+	
+	for(i = 0; i < length; ++i)
+	{
+		for(j = 0; j < length; ++j)
+		{
+			printf("%d ", product[i][j]);
+		}
+		printf("\n");
+	}
+/*input: 
+4
+1 3 5 7 9 11 13 15 17 19 21 23 25 27 29
+2 4 6 8 10 12 14 16 18 20 22 24 26 28 30
+*/
 }
