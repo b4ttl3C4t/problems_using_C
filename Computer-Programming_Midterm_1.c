@@ -1,5 +1,4 @@
-#include <stdio.h> 
-#include <stdlib.h> 
+#include <stdio.h>
 
 void lab_1(int);
 void lab_2(int);
