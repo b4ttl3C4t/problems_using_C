@@ -5,10 +5,11 @@ void lab_1(int);
 void lab_2(int);
 void lab_3(int *);
 void lab_4(void);
+void lab_5(void);
 
 int main(void)
 {	
-	lab_4();
+	lab_5();
 }
 
 void lab_1(int height)
@@ -104,8 +105,9 @@ void lab_3(int *arr)
 
 void lab_4(void)
 {
-	unsigned int length, i, j, k;
+	unsigned int length = 4, i, j, k;
 	
+	printf("input:");
 	scanf("%u", &length);
 
 	int X[8][8] = {0}, Y[8][8] = {0}, product[8][8] = {0};
@@ -114,7 +116,7 @@ void lab_4(void)
 	{
 		for(j = 0; j < length; ++j)
 		{
-			scanf("%d ", &X[i][j]);
+			scanf("%d", &X[i][j]);
 		}
 	}
 
@@ -122,7 +124,7 @@ void lab_4(void)
 	{
 		for(j = 0; j < length; ++j)
 		{
-			scanf("%d ", &Y[i][j]);
+			scanf("%d", &Y[i][j]);
 		}
 	}
 
@@ -147,7 +149,55 @@ void lab_4(void)
 	}
 /*input: 
 4
-1 3 5 7 9 11 13 15 17 19 21 23 25 27 29
-2 4 6 8 10 12 14 16 18 20 22 24 26 28 30
+1 3 5 7 9 11 13 15 17 19 21 23 25 27 29 31
+0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30
+*/
+}
+
+void lab_5(void)
+{
+	unsigned int each = 0, length = 4, i, j, k;
+	
+	printf("input:");
+	scanf("%u", &each);
+	scanf("%u", &length);
+
+	int X[10][8][8] = {0}, addition[8][8] = {0};
+	
+	for(i = 0; i < each; ++i)
+	{
+		for(j = 0; j < length; ++j)
+		{
+			for(k = 0; k < length; ++k)
+			{
+				scanf("%d", &X[i][j][k]);
+			}
+		}
+	}
+
+	for(i = 0; i < each; ++i)
+	{
+		for(j = 0; j < length; ++j)
+		{
+			for(k = 0; k < length; ++k)
+			{
+				addition[j][k] += X[i][j][k];
+			}
+		}
+	}
+	
+	for(i = 0; i < length; ++i)
+	{
+		for(j = 0; j < length; ++j)
+		{
+			printf("%d ", addition[i][j]);
+		}
+		printf("\n");
+	}
+/*input: 
+2
+4
+1 3 5 7 9 11 13 15 17 19 21 23 25 27 29 31
+0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30
 */
 }
