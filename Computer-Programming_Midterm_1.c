@@ -5,11 +5,11 @@ void lab_2(int);
 void lab_3(int *);
 void lab_4(void);
 void lab_5(void);
-void lab_6(int);
+void lab_6();
 
 int main(void)
 {	
-	lab_5();
+	lab_6();
 }
 
 void lab_1(int height)
@@ -202,7 +202,35 @@ void lab_5(void)
 */
 }
 
-void lab_6(int number)
+void lab_6()
 {
+	char c, arr[1500] = {0};
+	int flag = 0, odd = 0, even = 0, index = 0, result = 0;
+
+	while((c = getchar()) != '\n')
+	{
+		if(flag)
+		{
+			odd += c - 48;
+			flag = 0;
+		}
+		else
+		{
+			even += c - 48;
+			flag = 1;
+		}
+		arr[index] = c;
+		++index;
+	}
+	arr[index] = '\0';
 	
+	result = odd - even;
+	if(result % 11 == 0)
+	{
+		printf("%s is a mutiple of 11.", arr);
+	}
+	else
+	{
+		printf("%s is not a mutiple of 11.", arr);
+	}
 }
