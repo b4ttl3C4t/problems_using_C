@@ -15,7 +15,7 @@ void lab_6(void);
 
 int main(void)
 {
-	lab_3();
+	lab_6();
 }
 
 void lab_1(int fore, int mid, int back)
@@ -178,5 +178,29 @@ void lab_5(void)
 
 void lab_6(void)
 {
-    char str[50];
+    char str[30][100][30] = {0};
+    char out[1000] = {0};
+    unsigned int T, i, j, flag = 0;
+
+    scanf("%u", &T);
+    for(i = 0; i < T; ++i)
+    {
+        for(j = 0; j < 100; ++j)
+        {
+            scanf("%30[^\n]", str[i][j]);
+
+            if(getchar() == '\n' && getchar() == '\n')
+            {
+                ++i;
+            }
+        }
+    }
+    for(i = 0; i < 1000; ++i)
+    {
+        if(str[i] == ' ')
+        {
+            printf("\n\n");
+            printf("Case #%d");
+        }
+    } 
 }
