@@ -5,7 +5,7 @@ void lab_2(int);
 void lab_3(int *);
 void lab_4(void);
 void lab_5(void);
-void lab_6();
+void lab_6(void);
 
 int main(void)
 {	
