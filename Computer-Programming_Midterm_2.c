@@ -15,7 +15,7 @@ void lab_6(void);
 
 int main(void)
 {
-	lab_6();
+    lab_6();
 }
 
 void lab_1(int fore, int mid, int back)
@@ -178,29 +178,70 @@ void lab_5(void)
 
 void lab_6(void)
 {
-    char str[30][100][30] = {0};
-    char out[1000] = {0};
-    unsigned int T, i, j, flag = 0;
+    
+    char temp, str[30][100][15][30] = {'\0'};
+    unsigned int size, i, j, k, l;
 
-    scanf("%u", &T);
-    for(i = 0; i < T; ++i)
+    scanf("%u", &size);
+    getchar();
+    getchar();
+
+    for(i = 0; i < size; ++i)
     {
         for(j = 0; j < 100; ++j)
         {
-            scanf("%30[^\n]", str[i][j]);
-
-            if(getchar() == '\n' && getchar() == '\n')
+            for(k = 0; k < 15; ++k)
             {
-                ++i;
+                scanf("%10[a-zA-Z][^ \n]", str[i][j][k]);
+                printf("%u %u %u \n", i, j, k);
+                if((temp = getchar()) == '\n')
+                    break;
             }
+            
+            if((temp = getchar()) == '\n')
+                break;
+            else
+                ungetc(temp, stdin);
         }
     }
-    for(i = 0; i < 1000; ++i)
+    
+    int flag = 0;
+    for(i = 0; i < size; ++i)
     {
-        if(str[i] == ' ')
+        printf("Case #%u:\n", i);
+
+        for(j = 0; j < 100; ++j)
         {
-            printf("\n\n");
-            printf("Case #%d");
+            flag = 0;
+            for(k = 0; k < 15; ++k)
+            {
+                
+                if(str[i][j][k][0] == '\0')
+                    break;
+                
+                if(strlen(str[i][j][k]) < flag)
+                {
+                    printf("\n");
+                    break;
+                }
+                
+                printf("%c", str[i][j][k][flag]);
+                ++flag;
+            }
         }
-    } 
+        printf("\n");
+    }
+    
+    /*
+test data:
+2
+
+Hey good lawyer
+as I previously previewed
+yam does a soup
+
+First I give money to Teresa
+after I inform dad of
+your borrible soup
+    */
 }
