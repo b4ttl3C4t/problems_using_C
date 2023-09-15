@@ -15,7 +15,7 @@ void lab_6(void);
 
 int main(void)
 {
-    lab_6();
+	lab_6();
 }
 
 void lab_1(int fore, int mid, int back)
@@ -179,7 +179,7 @@ void lab_5(void)
 void lab_6(void)
 {
     
-    char temp, str[30][100][15][30] = {'\0'};
+    char temp, str[30][100][31] = {'\0'};
     unsigned int size, i, j, k, l;
 
     scanf("%u", &size);
@@ -190,14 +190,9 @@ void lab_6(void)
     {
         for(j = 0; j < 100; ++j)
         {
-            for(k = 0; k < 15; ++k)
-            {
-                scanf("%10[a-zA-Z][^ \n]", str[i][j][k]);
-                printf("%u %u %u \n", i, j, k);
-                if((temp = getchar()) == '\n')
-                    break;
-            }
-            
+            scanf("%30[a-zA-Z ][^\n]", str[i][j]);
+            getchar();
+
             if((temp = getchar()) == '\n')
                 break;
             else
@@ -205,28 +200,28 @@ void lab_6(void)
         }
     }
     
-    int flag = 0;
+    unsigned int flag = 0, length = 0;
     for(i = 0; i < size; ++i)
     {
-        printf("Case #%u:\n", i);
-
+        printf("Case #%u:\n", i + 1);
         for(j = 0; j < 100; ++j)
         {
+            length = strlen(str[i][j]);
             flag = 0;
-            for(k = 0; k < 15; ++k)
+
+            if(length == 0)
+                break;
+            
+            for(k = 0; k < 30; ++k)
             {
-                
-                if(str[i][j][k][0] == '\0')
-                    break;
-                
-                if(strlen(str[i][j][k]) < flag)
+                if(str[i][j][k] == ' ')
                 {
-                    printf("\n");
-                    break;
+                    k += flag;
+                    flag += 1;
+                    puts("");
                 }
-                
-                printf("%c", str[i][j][k][flag]);
-                ++flag;
+                if(k == flag)
+                putchar(str[i][j][k]);
             }
         }
         printf("\n");
