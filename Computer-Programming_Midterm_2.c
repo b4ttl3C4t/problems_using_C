@@ -176,57 +176,34 @@ void lab_5(void)
     char str[50];
 }
 
+
+
+
+/*lab_6.c*/
+#define MESSAGE_SIZE 30
+#define STR(x) #x
+#define XSTR(x) STR(x)
+
+void message_input( const unsigned int row, 
+                    const unsigned int col, 
+                    char str[][col][31]);
+void message_handle(const unsigned int row, 
+                    const unsigned int col, 
+                    char str[][col][31]);
+void output_result( char *, unsigned int);
+void result_probe(  char *, unsigned int *);
+
 void lab_6(void)
 {
-    
-    char temp, str[30][100][31] = {'\0'};
+    char str[30][100][31] = {'\0'};
     unsigned int size, i, j, k, l;
 
     scanf("%u", &size);
     getchar();
     getchar();
-
-    for(i = 0; i < size; ++i)
-    {
-        for(j = 0; j < 100; ++j)
-        {
-            scanf("%30[a-zA-Z ][^\n]", str[i][j]);
-            getchar();
-
-            if((temp = getchar()) == '\n')
-                break;
-            else
-                ungetc(temp, stdin);
-        }
-    }
     
-    unsigned int flag = 0, length = 0;
-    for(i = 0; i < size; ++i)
-    {
-        printf("Case #%u:\n", i + 1);
-        for(j = 0; j < 100; ++j)
-        {
-            length = strlen(str[i][j]);
-            flag = 0;
-
-            if(length == 0)
-                break;
-            
-            for(k = 0; k < 30; ++k)
-            {
-                if(str[i][j][k] == ' ')
-                {
-                    k += flag;
-                    flag += 1;
-                    puts("");
-                }
-                if(k == flag)
-                putchar(str[i][j][k]);
-            }
-        }
-        printf("\n");
-    }
-    
+    message_input(size, 100, str);
+    message_handle(size, 100, str);
     /*
 test data:
 2
@@ -239,4 +216,80 @@ First I give money to Teresa
 after I inform dad of
 your borrible soup
     */
+}
+
+void message_input( const unsigned int row, 
+                    const unsigned int col, 
+                    char str[][col][31])
+{
+    char temp;
+    unsigned int i, j;
+
+    for(i = 0; i < row; ++i)
+    {
+        for(j = 0; j < col; ++j)
+        {
+            scanf("%"XSTR(MESSAGE_SIZE)"[a-zA-Z ][^\n]", str[i][j]);
+            getchar();
+
+            //handle the end of case (enter charactor '\n' twice).
+            if((temp = getchar()) == '\n')
+                break;
+            else
+                ungetc(temp, stdin);
+        }
+    }
+}
+
+void message_handle( const unsigned int row, 
+                     const unsigned int col, 
+                     char str[][col][31])
+{
+    unsigned int i, j;
+
+    for(i = 0; i < row; ++i)
+    {
+        printf("Case #%u:\n", i + 1);
+        for(j = 0; j < col; ++j)
+        {
+            if(strlen(str[i][j]) == 0)
+                break;
+            
+            output_result(str[i][j], MESSAGE_SIZE);
+        }
+        puts("");
+    }
+}
+
+inline void output_result(char *str, unsigned int length)
+{
+    unsigned int i = 0, j = 0, index = 1;
+
+    putchar(str[0]);            //Print the first charactor and probe others.
+    while(str[i] != '\0')       //(the first charactor would be printed out)
+    {
+        if(str[i] == ' ')
+        {
+            str += i + 1;       //Relocate array index to the next of white space.
+            i = 0;
+            result_probe(str, &index);
+        }
+        ++i;
+    }
+    puts("");
+}
+
+inline void result_probe(char *str, unsigned int *target)
+{
+    int j = 0;
+
+    for(j = 0; j < *target; ++j)
+    {
+        if(str[j + 1] == ' ')   //Probe whether the next element of each one is white space.
+        {                       //Bypass the word if its length is less than the index.
+            return;
+        }
+    }
+    putchar(str[j]);            //Has already passed the test so print it to monitor.
+    ++*target;                  //Increasing index by one to update the value.
 }
