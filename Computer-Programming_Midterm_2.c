@@ -1,11 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define SWAP(x, y)          \
-        temp = (x);         \
-        (x) = (y);          \
-        (y) = temp;         \
-
 void lab_1(int, int, int);
 void lab_2(void);
 void lab_3(void);
@@ -15,7 +10,7 @@ void lab_6(void);
 
 int main(void)
 {
-	lab_6();
+	lab_4();
 }
 
 void lab_1(int fore, int mid, int back)
@@ -75,6 +70,13 @@ void lab_1(int fore, int mid, int back)
     printf("1");
 }
 
+
+
+#define SWAP(x, y)          \
+        temp = (x);         \
+        (x) = (y);          \
+        (y) = temp;         \
+
 void lab_2(void)
 {
     unsigned int legnth = 0, i, j;
@@ -120,7 +122,7 @@ void lab_2(void)
         printf("\n");
     }
 
-    /*test data:
+    /* test data:
 5
 1.2 3.7
 5.98 7.75
@@ -130,7 +132,29 @@ void lab_2(void)
     */
 }
 
-/*There is the cipher function, written in func.h .*/
+
+
+/*lab_3*/
+void Caesar_Cipher(char *, int, int);
+
+void lab_3(void)
+{
+    int offset = 0;
+    char str[150] = {0};
+    
+    scanf("%100[^\n]", str);
+    getchar();
+    scanf("%d", &offset);
+    str[strlen(str)] = '\0';
+    Caesar_Cipher(str, strlen(str), offset);
+    printf("%s", str);
+
+    /* test data:
+Hello world!
+4
+    */
+}
+
 void Caesar_Cipher(char *arr, int length, int offset)
 {
     unsigned int i;
@@ -148,29 +172,72 @@ void Caesar_Cipher(char *arr, int length, int offset)
     }
 }
 
-void lab_3(void)
-{
-    int offset = 0;
-    char str[150] = {0};
-    
-    scanf("%100[^\n]", str);
-    getchar();
-    scanf("%d", &offset);
-    str[strlen(str)] = '\0';
-    Caesar_Cipher(str, strlen(str), offset);
-    printf("%s", str);
 
-    /*
-Hello world!
-4
-    */
-}
+
+/*lab_4*/
+#define STR_SIZE 50
+#define RESULT_SIZE 100
+
+void find_location(char *, int *, int *, int *, char *);
+void concatenation(char *, int, int, char *);
 
 void lab_4(void)
 {
-    char str[50];
+    char str    [RESULT_SIZE + 1];
+    char orig   [STR_SIZE + 1];
+    char replace[STR_SIZE + 1];
+    int  index = 0, start, end;
+
+    gets(str);
+    gets(orig);
+    gets(replace);
+    
+    while(1)
+    {
+        find_location(str, &index, &start, &end, orig);
+        concatenation(str, start, end, replace);
+        if(end == strlen(str))
+        {
+            break;
+        }
+    }
+    puts(str);
 }
 
+//Setting location for start and end of keyword.
+void find_location(char *str, int *index, int *start, int *end, char *orig)
+{
+    int length = strlen(orig);
+
+    for (int i = *index; i < RESULT_SIZE; ++i)
+    {
+        if(!strncmp(str + i, orig, length))
+        {
+            *start  = i;
+            *end    = i + length;
+            return;
+        }
+    }
+}
+
+//Splitting string 
+void concatenation(char *str, int place1, int place2, char *insert)
+{
+    char buf1 [STR_SIZE + 1];
+    char buf2 [STR_SIZE + 1];
+
+    str[place1] = '\0';
+    sprintf(buf1, "%s", str);
+    sprintf(buf2, "%s", str + place2);
+    sprintf(str, "%s%s%s", buf1, insert, buf2);
+}
+
+#undef STR_SIZE
+#undef RESULT_SIZE
+
+
+
+/*lab_5*/
 void lab_5(void)
 {
     char str[50];
@@ -178,10 +245,9 @@ void lab_5(void)
 
 
 
-
-/*lab_6.c*/
+/*lab_6*/
 #define MESSAGE_SIZE 30
-#define STR(x) #x
+#define STR(x)  #x          //Trick: Scanning macro twice to assure the result accepted.
 #define XSTR(x) STR(x)
 
 void message_input( const unsigned int row, 
@@ -204,8 +270,7 @@ void lab_6(void)
     
     message_input(size, 100, str);
     message_handle(size, 100, str);
-    /*
-test data:
+    /* test data:
 2
 
 Hey good lawyer
@@ -230,9 +295,15 @@ void message_input( const unsigned int row,
         for(j = 0; j < col; ++j)
         {
             scanf("%"XSTR(MESSAGE_SIZE)"[a-zA-Z ][^\n]", str[i][j]);
+            /*It will trans to "%30[a-zA-Z ][^\n]" ,
+             *which means you should input 30 charactor
+             *between 'a' to 'z', 'A' to 'Z' or white space
+             *and input '\n' (enter button) to end the string.
+             */
+            //You can replace function scanf(...) by gets(char *) to make it more clear.
             getchar();
 
-            //handle the end of case (enter charactor '\n' twice).
+            //Handling the end of case (when you input charactor '\n' twice).
             if((temp = getchar()) == '\n')
                 break;
             else
@@ -252,6 +323,9 @@ void message_handle( const unsigned int row,
         printf("Case #%u:\n", i + 1);
         for(j = 0; j < col; ++j)
         {
+            /*Out of current loop when there is no string there.
+             *(Namely, length of string is zero.)
+             */
             if(strlen(str[i][j]) == 0)
                 break;
             
@@ -263,14 +337,17 @@ void message_handle( const unsigned int row,
 
 inline void output_result(char *str, unsigned int length)
 {
-    unsigned int i = 0, j = 0, index = 1;
+    unsigned int i = 0, index = 1;
 
-    putchar(str[0]);            //Print the first charactor and probe others.
-    while(str[i] != '\0')       //(the first charactor would be printed out)
+    putchar(str[0]);
+    /*Printing out the first charactor and probe others.
+     *(The first charactor would be printed out.)
+     */
+    while(str[i] != '\0')        
     {
         if(str[i] == ' ')
         {
-            str += i + 1;       //Relocate array index to the next of white space.
+            str += i + 1;       //Relocating array index to the next of white space.
             i = 0;
             result_probe(str, &index);
         }
@@ -285,11 +362,15 @@ inline void result_probe(char *str, unsigned int *target)
 
     for(j = 0; j < *target; ++j)
     {
-        if(str[j + 1] == ' ')   //Probe whether the next element of each one is white space.
+        if(str[j + 1] == ' ')   //Probing whether the next element of each one is white space.
         {                       //Bypass the word if its length is less than the index.
             return;
         }
     }
-    putchar(str[j]);            //Has already passed the test so print it to monitor.
+    putchar(str[j]);            //The word has already passed the test so print it out.
     ++*target;                  //Increasing index by one to update the value.
 }
+
+#undef MESSAGE_SIZE
+#undef STR
+#undef XSTR
