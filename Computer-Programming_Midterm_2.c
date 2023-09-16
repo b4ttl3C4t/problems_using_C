@@ -208,7 +208,9 @@ C Programming
     */
 }
 
-//Setting location for start and end of keyword.
+/*Setting location for start and end of keyword, 
+ *and updating index at the same time.
+ */
 void find_location(char *str, int *index, int *start, int *end, char *orig)
 {
     int length = strlen(orig);
@@ -224,7 +226,9 @@ void find_location(char *str, int *index, int *start, int *end, char *orig)
     }
 }
 
-//Splitting string 
+/*Splitting string by place1 and place2, 
+ *and inserting string which you want to replace the original one.
+ */
 void concatenation(char *str, int place1, int place2, char *insert)
 {
     char buf1 [STR_SIZE + 1];
