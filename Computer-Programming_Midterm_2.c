@@ -186,7 +186,7 @@ void lab_4(void)
     char str    [RESULT_SIZE + 1];
     char orig   [STR_SIZE + 1];
     char replace[STR_SIZE + 1];
-    int  index = 0, start, end;
+    int  index = 0, start = 0, end = 1;
 
     gets(str);
     gets(orig);
@@ -195,13 +195,17 @@ void lab_4(void)
     while(1)
     {
         find_location(str, &index, &start, &end, orig);
-        concatenation(str, start, end, replace);
-        if(end == strlen(str))
-        {
+        if(index == RESULT_SIZE)
             break;
-        }
+        concatenation(str, start, end, replace);
     }
     puts(str);
+
+    /* test data:
+Hello world!
+world
+C Programming
+    */
 }
 
 //Setting location for start and end of keyword.
@@ -209,12 +213,12 @@ void find_location(char *str, int *index, int *start, int *end, char *orig)
 {
     int length = strlen(orig);
 
-    for (int i = *index; i < RESULT_SIZE; ++i)
+    for (; *index < RESULT_SIZE; ++*index)
     {
-        if(!strncmp(str + i, orig, length))
+        if(!strncmp(str + *index, orig, length))
         {
-            *start  = i;
-            *end    = i + length;
+            *start  = *index;
+            *end    = *index + length;
             return;
         }
     }
