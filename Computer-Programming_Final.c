@@ -71,6 +71,7 @@ typedef struct LINKED_LIST
 {
 	double x;
 	double y;
+	struct LINKED_LIST *pre;
 	struct LINKED_LIST *next;
 }linked_list;
 
@@ -92,9 +93,10 @@ void lab_2()
 	linked_list head;
 	head.x = 0.0;
 	head.y = 0.0;
+	head.pre = NULL;
 	head.next = NULL;
 	convert(&head, data, size);
-	sort(&head, size);
+	//sort(&head, size);
 	print_list(&head);
 }
 
@@ -102,17 +104,22 @@ void convert(linked_list *list, float data[][2], int size)
 {
 	int i;
 
+	linked_list *head = list;
+
 	for(i = 0; i < size; ++i)
 	{
 		list->x = data[i][0];
 		list->y = data[i][1];
 
 		list->next = (linked_list *)malloc(sizeof(linked_list));
-		list->next->next = NULL;
+		list->next->pre  = list;
+		list->next->next = head;
+		head->pre = list->next;
+		printf("%.2f %.2f\n", list->next->x, list->next->y);
 
 		list = list->next;
 	}
-	list->next = NULL;
+	list->next = head;
 }
 
 void sort(linked_list *list, int size)
@@ -125,11 +132,11 @@ void sort(linked_list *list, int size)
 		{
 			if(index_list(list, j)->x > index_list(list, j + 1)->x)
 			{
-				if(j)
-				{
-					index_list(list, j - 1)->next = index_list(list, j + 1);
-					index_list(list, j + 1)->next = index_list(list, j);
-				}
+				index_list(list, j)->pre->next = index_list(list, j + 1);
+				index_list(list, j)->next = index_list(list, j + 2);
+
+				index_list(list, j + 1)->next->pre  = index_list(list, j);
+				index_list(list, j + 1)->pre = index_list(list, j - 1);
 			}
 			printf("%d %d\n", i, j);
 		}
@@ -149,7 +156,16 @@ inline linked_list * index_list(linked_list *list, int index)
 
 inline void print_list(linked_list *list)
 {
-	for(; list->next != NULL; list = list->next)
+	linked_list *head = list;
+	for(; list->next != head; list = list->next)
+	{
+		printf("%.2f %.2f\n", list->x, list->y);
+	}
+
+	printf("\n");
+
+	list = head->pre;
+	for(; list->pre != head; list = list->pre)
 	{
 		printf("%.2f %.2f\n", list->x, list->y);
 	}
