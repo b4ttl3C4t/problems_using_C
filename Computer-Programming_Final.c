@@ -77,7 +77,6 @@ typedef struct LINKED_LIST
 void convert(linked_list *, float[][2], int);
 void sort(linked_list *, int);
 linked_list * index_list(linked_list *, int);
-void swap_list(linked_list *, linked_list *);
 void print_list(linked_list *);
 /*請使用雙項鍊表才能改變該程式使其能夠運行（以利節點交換）*/
 void lab_2()
@@ -124,23 +123,15 @@ void sort(linked_list *list, int size)
 	{
 		for(j = 0; j < size; ++j)
 		{
-			if(index_list(list, i)->y > index_list(list, j)->y)
+			if(index_list(list, j)->x > index_list(list, j + 1)->x)
 			{
-				swap_list(index_list(list, i), index_list(list, j));
-				printf("|2|\n");
+				if(j)
+				{
+					index_list(list, j - 1)->next = index_list(list, j + 1);
+					index_list(list, j + 1)->next = index_list(list, j);
+				}
 			}
 			printf("%d %d\n", i, j);
-		}
-	}
-
-	for(i = 0; i < size; ++i)
-	{
-		for(j = 0; j < size; ++j)
-		{
-			if(index_list(list, i)->x > index_list(list, i + 1)->x)
-			{
-				swap_list(index_list(list, i), index_list(list, i + 1));
-			}
 		}
 	}
 }
@@ -154,21 +145,6 @@ inline linked_list * index_list(linked_list *list, int index)
 		list = list->next;
 	}
 	return list;
-}
-
-inline void swap_list(linked_list *X, linked_list *Y)
-{
-	X->next = (unsigned)(X->next) ^ (unsigned)(Y->next);
-	Y->next = (unsigned)(X->next) ^ (unsigned)(Y->next);
-	X->next = (unsigned)(X->next) ^ (unsigned)(Y->next);
-
-	X->x	= (unsigned)(X->x) ^ (unsigned)(Y->x);
-	Y->x	= (unsigned)(X->x) ^ (unsigned)(Y->x);
-	X->x	= (unsigned)(X->x) ^ (unsigned)(Y->x);
-
-	X->y	= (unsigned)(X->y) ^ (unsigned)(Y->y);
-	Y->y	= (unsigned)(X->y) ^ (unsigned)(Y->y);
-	X->y	= (unsigned)(X->y) ^ (unsigned)(Y->y);
 }
 
 inline void print_list(linked_list *list)
