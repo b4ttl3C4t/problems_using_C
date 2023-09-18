@@ -77,9 +77,9 @@ typedef struct LINKED_LIST
 
 void convert(linked_list *, float[][2], int);
 void sort(linked_list *, int);
-linked_list * index_list(linked_list *, int);
 void print_list(linked_list *);
-/*請使用雙項鍊表才能改變該程式使其能夠運行（以利節點交換）*/
+linked_list * index_list(linked_list *, int);
+/*測試是否可以使用index_list()於print_list上*/
 void lab_2()
 {
 	int size = 5;
@@ -108,18 +108,36 @@ void convert(linked_list *list, float data[][2], int size)
 
 	for(i = 0; i < size; ++i)
 	{
-		list->x = data[i][0];
-		list->y = data[i][1];
-
 		list->next = (linked_list *)malloc(sizeof(linked_list));
 		list->next->pre  = list;
 		list->next->next = head;
 		head->pre = list->next;
-		printf("%.2f %.2f\n", list->next->x, list->next->y);
+
+		list->x = data[i][0];
+		list->y = data[i][1];
 
 		list = list->next;
 	}
-	list->next = head;
+	list->x = data[size - 1][0];
+	list->y = data[size - 1][1];
+
+	/*printf("|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n", 
+	head->x, 								head->y, 
+	head->pre->x, 							head->pre->y, 
+	head->pre->pre->x, 						head->pre->pre->y, 
+	head->pre->pre->pre->x, 				head->pre->pre->pre->y, 
+	head->pre->pre->pre->pre->x, 			head->pre->pre->pre->pre->y,
+	head->pre->pre->pre->pre->pre->x, 		head->pre->pre->pre->pre->pre->y);
+
+	printf("_____________\n\n");
+
+	printf("|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n", 
+	head->x, 								head->y, 
+	head->next->x, 							head->next->y, 
+	head->next->next->x, 					head->next->next->y, 
+	head->next->next->next->x, 				head->next->next->next->y, 
+	head->next->next->next->next->x, 		head->next->next->next->next->y,
+	head->next->next->next->next->next->x, 	head->next->next->next->next->next->y);*/
 }
 
 void sort(linked_list *list, int size)
@@ -132,13 +150,14 @@ void sort(linked_list *list, int size)
 		{
 			if(index_list(list, j)->x > index_list(list, j + 1)->x)
 			{
-				index_list(list, j)->pre->next = index_list(list, j + 1);
+				index_list(list, j - 1)->next = index_list(list, j + 1);
 				index_list(list, j)->next = index_list(list, j + 2);
 
 				index_list(list, j + 1)->next->pre  = index_list(list, j);
 				index_list(list, j + 1)->pre = index_list(list, j - 1);
 			}
 			printf("%d %d\n", i, j);
+			printf("|%.2f %.2f|\n", list->x, list->y);
 		}
 	}
 }
@@ -146,7 +165,7 @@ void sort(linked_list *list, int size)
 inline linked_list * index_list(linked_list *list, int index)
 {
 	int i;
-
+	
 	for(i = 0; i < index; i++)
 	{
 		list = list->next;
@@ -157,16 +176,10 @@ inline linked_list * index_list(linked_list *list, int index)
 inline void print_list(linked_list *list)
 {
 	linked_list *head = list;
-	for(; list->next != head; list = list->next)
+	
+	do
 	{
 		printf("%.2f %.2f\n", list->x, list->y);
-	}
-
-	printf("\n");
-
-	list = head->pre;
-	for(; list->pre != head; list = list->pre)
-	{
-		printf("%.2f %.2f\n", list->x, list->y);
-	}
+		list = list->next;
+	} while (list->next != head);
 }
