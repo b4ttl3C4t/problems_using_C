@@ -4,10 +4,11 @@
 
 void lab_1(int, int, int);
 void lab_2();
+void lab_3();
 
 int main(void)
 {
-    lab_2();
+    lab_3();
     return 0;
 }
 
@@ -75,11 +76,12 @@ typedef struct LINKED_LIST
 	struct LINKED_LIST *next;
 }linked_list;
 
-void convert(linked_list *, float[][2], int);
+void lab_2_convert(linked_list *, float[][2], int);
 void sort(linked_list *, int);
 void print_list(linked_list *);
+void data_swap(linked_list *, linked_list *);
 linked_list * index_list(linked_list *, int);
-/*測試是否可以使用index_list()於print_list上*/
+
 void lab_2()
 {
 	int size = 5;
@@ -91,75 +93,79 @@ void lab_2()
 	};
 
 	linked_list head;
-	head.x = 0.0;
-	head.y = 0.0;
-	head.pre = NULL;
-	head.next = NULL;
-	convert(&head, data, size);
-	//sort(&head, size);
+	lab_2_convert(&head, data, size);
+	sort(&head, size);
 	print_list(&head);
 }
 
-void convert(linked_list *list, float data[][2], int size)
+void lab_2_convert(linked_list *list, float data[][2], int size)
 {
 	int i;
 
+	//You should set the data to head node firstly.
 	linked_list *head = list;
+	head->pre 	= NULL;
+	head->next 	= NULL;
+	head->x		= data[0][0];
+	head->y 	= data[0][1];
 
-	for(i = 0; i < size; ++i)
+	//Then, you can add nodes connecting head node to construct the whole linked list.
+	for(i = 1; i < size; ++i)
 	{
+		//Allocating memory for the newer node.
 		list->next = (linked_list *)malloc(sizeof(linked_list));
-		list->next->pre  = list;
-		list->next->next = head;
-		head->pre = list->next;
 
-		list->x = data[i][0];
-		list->y = data[i][1];
+		//Setting the data of the newer node (including x, y, pre and next).
+		list->next->x 		= data[i][0];
+		list->next->y 		= data[i][1];
+		list->next->pre  	= list;
+		list->next->next 	= head;
 
-		list = list->next;
+		//Concatenating the newer node with the head node and the last node.
+		head->pre 	= list->next;
+		list 		= list->next;
 	}
-	list->x = data[size - 1][0];
-	list->y = data[size - 1][1];
-
-	/*printf("|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n", 
-	head->x, 								head->y, 
-	head->pre->x, 							head->pre->y, 
-	head->pre->pre->x, 						head->pre->pre->y, 
-	head->pre->pre->pre->x, 				head->pre->pre->pre->y, 
-	head->pre->pre->pre->pre->x, 			head->pre->pre->pre->pre->y,
-	head->pre->pre->pre->pre->pre->x, 		head->pre->pre->pre->pre->pre->y);
-
-	printf("_____________\n\n");
-
-	printf("|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n|%.2f %.2f|\n", 
-	head->x, 								head->y, 
-	head->next->x, 							head->next->y, 
-	head->next->next->x, 					head->next->next->y, 
-	head->next->next->next->x, 				head->next->next->next->y, 
-	head->next->next->next->next->x, 		head->next->next->next->next->y,
-	head->next->next->next->next->next->x, 	head->next->next->next->next->next->y);*/
 }
 
 void sort(linked_list *list, int size)
 {
 	int i, j;
+	linked_list *head = list;
 
-	for(i = 0; i < size; ++i)
+	for(i = 0; i < size - 1; ++i)
 	{
-		for(j = 0; j < size; ++j)
+		for(j = 0; j < size - 1; ++j)
+		{
+			if(index_list(list, j)->y > index_list(list, j + 1)->y)
+			{
+				data_swap(index_list(list, j), index_list(list, j + 1));
+			}
+		}
+	}
+
+	for(i = 0; i < size - 1; ++i)
+	{
+		for(j = 0; j < size - 1; ++j)
 		{
 			if(index_list(list, j)->x > index_list(list, j + 1)->x)
 			{
-				index_list(list, j - 1)->next = index_list(list, j + 1);
-				index_list(list, j)->next = index_list(list, j + 2);
-
-				index_list(list, j + 1)->next->pre  = index_list(list, j);
-				index_list(list, j + 1)->pre = index_list(list, j - 1);
+				data_swap(index_list(list, j), index_list(list, j + 1));
 			}
-			printf("%d %d\n", i, j);
-			printf("|%.2f %.2f|\n", list->x, list->y);
 		}
 	}
+}
+
+inline void data_swap(linked_list *X, linked_list *Y)
+{
+	static float temp;
+
+	temp = X->x;
+	X->x = Y->x;
+	Y->x = temp;
+
+	temp = X->y;
+	X->y = Y->y;
+	Y->y = temp;
 }
 
 inline linked_list * index_list(linked_list *list, int index)
@@ -181,5 +187,16 @@ inline void print_list(linked_list *list)
 	{
 		printf("%.2f %.2f\n", list->x, list->y);
 		list = list->next;
-	} while (list->next != head);
+	} while (list != head);
+}
+
+/*lab_3*/
+void lab_3()
+{
+	char* data = 
+		"Caspar Murray,50,25,100,80\n"
+		"Rory Gordon,50,50,100,60\n"
+		"Winnie Randolph,50,100,50,20\n";
+	
+
 }
