@@ -191,6 +191,17 @@ inline void print_list(linked_list *list)
 }
 
 /*lab_3*/
+typedef struct GRADE_LIST
+{
+	char name[51];
+	int English;
+	int Math;
+	int History;
+	int Physics;
+	struct GRADE_LIST *pre;
+	struct GRADE_LIST *next;
+}grade_list;
+
 void lab_3()
 {
 	char* data = 
@@ -198,5 +209,26 @@ void lab_3()
 		"Rory Gordon,50,50,100,60\n"
 		"Winnie Randolph,50,100,50,20\n";
 	
+	char foo[1001] = {0};
+	grade_list buf[10];
+	int index = 0, i;
 
+	sprintf(foo, "%s", data);
+
+	for(i = 0; i < 3; ++i)
+	{
+		sscanf(foo + index, "%50[^,]%*c%d%*c%d%*c%d%*c%d",
+				buf[i].name,
+				&buf[i].English,
+				&buf[i].Math,
+				&buf[i].History,
+				&buf[i].Physics);
+		do
+		{
+			++index;
+		} while (foo[index] != '\n');
+	}
+	printf("%d\n", buf[0].Physics);
+	printf("%d\n", buf[1].Physics);
+	printf("%d\n", buf[2].Physics);
 }
