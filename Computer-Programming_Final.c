@@ -191,9 +191,13 @@ inline void print_list(linked_list *list)
 }
 
 /*lab_3*/
+#define NAME_SIZE 50
+#define STR(x) #x
+#define XSTR(x) STR(x)
+
 typedef struct GRADE_LIST
 {
-	char name[51];
+	char name[NAME_SIZE + 1];
 	int English;
 	int Math;
 	int History;
@@ -201,6 +205,11 @@ typedef struct GRADE_LIST
 	struct GRADE_LIST *pre;
 	struct GRADE_LIST *next;
 }grade_list;
+
+void 	lab_3_convert(grade_list *, char *, int);
+double 	average(grade_list *);
+int 	input_data(grade_list *, char *, int);
+void 	print_data(grade_list *);
 
 void lab_3()
 {
@@ -210,25 +219,83 @@ void lab_3()
 		"Winnie Randolph,50,100,50,20\n";
 	
 	char foo[1001] = {0};
-	grade_list buf[10];
-	int index = 0, i;
 
 	sprintf(foo, "%s", data);
+	grade_list head;
+	head.pre  = NULL;
+	head.next = NULL;
 
-	for(i = 0; i < 3; ++i)
-	{
-		sscanf(foo + index, "%50[^,]%*c%d%*c%d%*c%d%*c%d",
-				buf[i].name,
-				&buf[i].English,
-				&buf[i].Math,
-				&buf[i].History,
-				&buf[i].Physics);
-		do
-		{
-			++index;
-		} while (foo[index] != '\n');
-	}
-	printf("%d\n", buf[0].Physics);
-	printf("%d\n", buf[1].Physics);
-	printf("%d\n", buf[2].Physics);
+	lab_3_convert(&head, data, 3);
+
+	puts("\n|-|-|-|-|");
+
+	//print_data(&head);
 }
+
+void lab_3_convert(grade_list *list, char *data, int length)
+{
+	int index = 0;
+	grade_list *head = list; 
+	index = input_data(head, data, index);
+
+	for(int i = 1; i < length; ++i)
+	{
+		list->next = (grade_list *)malloc(sizeof(grade_list));
+
+		index += input_data(list, data, index);
+		list->next->pre  = list;
+		list->next->next = head;
+
+		printf("%s: %d, %d, %d, %d\n", list->name, list->English, list->Math, list->History, list->Physics);
+		head->pre 	= list->next;
+		list 		= list->next;
+	}
+}
+
+double average(grade_list *list)
+{
+	grade_list *head = list;
+	int summation = 0, length = 0;
+
+	do
+	{
+		summation += list->English + list->Math + list->History + list->Physics; 
+		++length;
+		list = list->next;
+	} while (list != head);
+
+	return summation / length;
+}
+
+int input_data(grade_list *list, char *data, int index)
+{
+	sscanf(data + index, "%"XSTR(NAME_SIZE)"[^,]%*c%d%*c%d%*c%d%*c%d",
+		list->name,
+		&list->English,
+		&list->Math,
+		&list->History,
+		&list->Physics);
+	
+	do
+	{
+		++index;
+	} while (data[index] != '\n');
+	return index;
+}
+
+void print_data(grade_list *list)
+{
+	grade_list *head = list;
+
+	do
+	{
+		printf("%s: %d, %d, %d, %d\n", list->name, list->English, list->Math, list->History, list->Physics);
+		list = list->next;
+	} while (list != head);
+	
+	printf("Average score: %.2lf", average(head));
+}
+
+#undef NAME_SIZE
+#undef STR
+#undef XSTR
