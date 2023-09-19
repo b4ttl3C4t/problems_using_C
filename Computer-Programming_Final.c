@@ -112,18 +112,20 @@ void lab_2_convert(linked_list *list, float data[][2], int size)
 	//Then, you can add nodes connecting head node to construct the whole linked list.
 	for(i = 1; i < size; ++i)
 	{
-		//Allocating memory for the newer node.
+		/*Allocating memory for the newer node, 
+		 *and concatenating the newer node with the head node and the last node.
+		 */
 		list->next = (linked_list *)malloc(sizeof(linked_list));
+		head->pre 	= list->next;
 
 		//Setting the data of the newer node (including x, y, pre and next).
 		list->next->x 		= data[i][0];
 		list->next->y 		= data[i][1];
 		list->next->pre  	= list;
 		list->next->next 	= head;
-
-		//Concatenating the newer node with the head node and the last node.
-		head->pre 	= list->next;
-		list 		= list->next;
+		
+		//To the next node.
+		list = list->next;
 	}
 }
 
@@ -197,11 +199,11 @@ inline void print_list(linked_list *list)
 
 typedef struct GRADE_LIST
 {
-	char name[NAME_SIZE + 1];
 	int English;
 	int Math;
 	int History;
 	int Physics;
+	char name[NAME_SIZE + 1];
 	struct GRADE_LIST *pre;
 	struct GRADE_LIST *next;
 }grade_list;
