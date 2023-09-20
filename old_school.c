@@ -112,6 +112,4 @@ void dutch_national_flag(unsigned int length, char *arr)
 int main(void)
 {
     printf("%u", permutation(10, 2));
-
-    return 0;
 }
