@@ -9,7 +9,6 @@ void lab_3();
 int main(void)
 {
     lab_3();
-    return 0;
 }
 
 /*lab_1*/
