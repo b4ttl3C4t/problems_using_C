@@ -228,29 +228,25 @@ void lab_3()
 	head.next = NULL;
 
 	lab_3_convert(&head, data, 3);
-
-	puts("\n|-|-|-|-|");
-
-	//print_data(&head);
+	print_data(&head);
 }
 
 void lab_3_convert(grade_list *list, char *data, int length)
 {
 	int index = 0;
-	grade_list *head = list; 
+	grade_list *head = list;
 	index = input_data(head, data, index);
 
 	for(int i = 1; i < length; ++i)
 	{
 		list->next = (grade_list *)malloc(sizeof(grade_list));
+		head->pre  = list->next;
 
-		index += input_data(list, data, index);
+		index = input_data(list->next, data, index);
 		list->next->pre  = list;
 		list->next->next = head;
-
-		printf("%s: %d, %d, %d, %d\n", list->name, list->English, list->Math, list->History, list->Physics);
-		head->pre 	= list->next;
-		list 		= list->next;
+		
+		list = list->next;
 	}
 }
 
@@ -282,13 +278,17 @@ int input_data(grade_list *list, char *data, int index)
 	{
 		++index;
 	} while (data[index] != '\n');
-	return index;
+	/*You have to return the index with increasing one
+	 *to avoid the first charactor '\n' .
+	 *Otherwise, there are going to get a *new line* to the element *name* .
+	 */
+	return ++index;
 }
 
 void print_data(grade_list *list)
 {
 	grade_list *head = list;
-
+	
 	do
 	{
 		printf("%s: %d, %d, %d, %d\n", list->name, list->English, list->Math, list->History, list->Physics);
