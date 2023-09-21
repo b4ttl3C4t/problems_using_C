@@ -3,13 +3,17 @@
 #include <string.h>
 
 void lab_1(int, int, int);
-void lab_2();
-void lab_3();
+void lab_2(void);
+void lab_3(void);
+void lab_4(void);
+void lab_5(void);
 
 int main(void)
 {
     lab_3();
 }
+
+
 
 /*lab_1*/
 int  max(int, int, int);
@@ -66,6 +70,8 @@ void print_knot(int current, int weight, int is_mid)
 	}
 }
 
+
+
 /*lab_2*/
 typedef struct LINKED_LIST
 {
@@ -81,7 +87,7 @@ void print_list(linked_list *);
 void data_swap(linked_list *, linked_list *);
 linked_list * index_list(linked_list *, int);
 
-void lab_2()
+void lab_2(void)
 {
 	int size = 5;
 	float data[][2] =
@@ -191,6 +197,8 @@ inline void print_list(linked_list *list)
 	} while (list != head);
 }
 
+
+
 /*lab_3*/
 #define NAME_SIZE 50
 #define STR(x) #x
@@ -212,7 +220,7 @@ double 	average(grade_list *);
 int 	input_data(grade_list *, char *, int);
 void 	print_data(grade_list *);
 
-void lab_3()
+void lab_3(void)
 {
 	char* data = 
 		"Caspar Murray,50,25,100,80\n"
@@ -294,9 +302,58 @@ void print_data(grade_list *list)
 		list = list->next;
 	} while (list != head);
 	
-	printf("Average score: %.2lf", average(head));
+	printf("Average score: %.2lf\n", average(head));
 }
 
 #undef NAME_SIZE
+#undef STR
+#undef XSTR
+
+
+
+/*lab_4*/
+#define BUF_SIZE 30
+#define STR(x) #x
+#define XSTR(x) STR(x)
+
+void lab_4(void)
+{
+
+}
+
+/*lab_5*/
+char letter_to_number_table(char c)
+{
+	switch c:
+	
+}
+
+void lab_5(void)
+{
+	//The buffer for data input.
+	char data[2000][BUF_SIZE + 1] = {'\0'};
+	//For size and loop.
+	unsigned int i, j, length = 0;
+	//Handling the content of data by letter-to-number table.
+	unsigned int 
+
+	scanf("%u", &length);
+	for(i = 0; i < length; ++i)
+	{
+		scanf("%"XSTR(BUF_SIZE)"[0-9a-zA-Z-][^\n]", data[i]);
+		getchar();
+	}
+
+	for(i = 0; i < length; ++i)
+	{
+		for(j = 0; j < BUF_SIZE; ++j)
+		{
+			
+		}
+		printf()
+	}
+}
+
+#undef BUF_SIZE
 #undef STR
 #undef XSTR
