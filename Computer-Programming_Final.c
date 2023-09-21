@@ -7,10 +7,11 @@ void lab_2(void);
 void lab_3(void);
 void lab_4(void);
 void lab_5(void);
+void lab_6(void);
 
 int main(void)
 {
-    lab_3();
+    lab_6();
 }
 
 
@@ -312,21 +313,19 @@ void print_data(grade_list *list)
 
 
 /*lab_4*/
-#define BUF_SIZE 30
-#define STR(x) #x
-#define XSTR(x) STR(x)
-
 void lab_4(void)
 {
 
 }
 
+
+
 /*lab_5*/
-char letter_to_number_table(char c)
-{
-	switch c:
-	
-}
+#define BUF_SIZE 30
+#define STR(x) #x
+#define XSTR(x) STR(x)
+
+char letter_to_number_table(char, unsigned int *, unsigned int *);
 
 void lab_5(void)
 {
@@ -335,22 +334,176 @@ void lab_5(void)
 	//For size and loop.
 	unsigned int i, j, length = 0;
 	//Handling the content of data by letter-to-number table.
-	unsigned int 
+	unsigned int letters, hyphens;
 
 	scanf("%u", &length);
+	getchar();
+
 	for(i = 0; i < length; ++i)
 	{
-		scanf("%"XSTR(BUF_SIZE)"[0-9a-zA-Z-][^\n]", data[i]);
+		scanf("%"XSTR(BUF_SIZE)"[0-9A-Z-][^\n]", data[i]);
 		getchar();
 	}
 
 	for(i = 0; i < length; ++i)
 	{
+		letters = hyphens = 0;
+
 		for(j = 0; j < BUF_SIZE; ++j)
 		{
-			
+			if(!data[i][j])
+				break;
+			putchar(letter_to_number_table(data[i][j], &letters, &hyphens));
 		}
-		printf()
+		printf(" %u %u", letters, hyphens);
+		putchar('\n');
+	}
+
+	/*test data:
+2
+1-HOME-SWEET-HOME
+MY-MISERABLE-JOB
+	*/
+}
+
+char letter_to_number_table(char c, unsigned int *letter_flag, unsigned int *hyphen_flag)
+{
+	switch(c)
+	{
+	case 'A':
+	case 'B':
+	case 'C':
+		c = '2';
+		break;
+
+	case 'D':
+	case 'E':
+	case 'F':
+		c = '3';
+		break;
+
+	case 'G':
+	case 'H':
+	case 'I':
+		c = '4';
+		break;
+		
+	case 'J':
+	case 'K':
+	case 'L':
+		c = '5';
+		break;
+		
+	case 'M':
+	case 'N':
+	case 'O':
+		c = '6';
+		break;
+			
+	case 'P':
+	case 'Q':
+	case 'R':
+	case 'S':
+		c = '7';
+		break;
+
+	case 'T':
+	case 'U':
+	case 'V':
+		c = '8';
+		break;
+			
+	case 'W':
+	case 'X':
+	case 'Y':
+	case 'Z':
+		c = '9';
+		break;
+	
+	case '-':
+		++*hyphen_flag;
+		return c;
+	
+	default:
+		return c;
+	}
+	
+	++*letter_flag;
+	return c;
+}
+
+#undef BUF_SIZE
+#undef STR
+#undef XSTR
+
+
+
+/*lab_6*/
+#define BUF_SIZE 75
+#define STR(x) #x
+#define XSTR(x) STR(x)
+
+void name_sort(char (*)[BUF_SIZE + 1], unsigned int);
+static void name_swap(char *, char *);
+void name_count(char (*)[BUF_SIZE + 1], int *, unsigned int);
+void name_print(char (*)[BUF_SIZE + 1], int *, unsigned int);
+
+void lab_6(void)
+{
+	//For input data.
+	char data[2000][BUF_SIZE + 1] = {'\0'};
+	//For name count.
+	unsigned int count[2000] = {0};
+	//For loop variable.
+	unsigned int i, length;
+
+	scanf("%u", &length);
+	getchar();
+
+	for(i = 0; i < length; ++i)
+	{
+		scanf("%"XSTR(BUF_SIZE)"[^ ]%*[^\n]", data[i]);
+		getchar();
+	}
+	name_sort(data, length);
+	name_print(data, count, length);
+}
+
+void name_sort(char (*data)[BUF_SIZE + 1], unsigned int length)
+{
+	unsigned int i, j;
+
+	//Taking bubble sort for each string.
+	for(i = 0; i < length - 1; ++i)
+	{
+		for(j = 0; j < length - 1; ++j)
+		{
+			if(strcmp(data[i], data[i + 1]) > 0)
+				name_swap(data[i], data[i + 1]);
+		}
+	}
+}
+
+static inline void name_swap(char *X, char *Y)
+{
+	static char *temp;
+	temp = X;
+	X = Y;
+	Y = temp;
+}
+
+void name_count(char (*data)[BUF_SIZE + 1], int *count, unsigned int length)
+{
+	;
+}
+
+void name_print(char (*result)[BUF_SIZE + 1], int *count, unsigned int length)
+{
+	unsigned int i;
+
+	for(i = 0; i < length; ++i)
+	{
+		printf("%s %d\n", result[i], count[i]);
 	}
 }
 
