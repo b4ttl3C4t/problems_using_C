@@ -22,7 +22,7 @@ void print_knot(int, int, int);
 
 void lab_1(int fore, int mid, int back)
 {
-    int i, j, weight = max(fore, mid, back);
+    int weight = max(fore, mid, back);
     
 	print_knot(fore, weight, 0);
 	print_knot(mid, weight, 1);
@@ -138,7 +138,6 @@ void lab_2_convert(linked_list *list, float data[][2], int size)
 void sort(linked_list *list, int size)
 {
 	int i, j;
-	linked_list *head = list;
 
 	for(i = 0; i < size - 1; ++i)
 	{
@@ -445,8 +444,8 @@ char letter_to_number_table(char c, unsigned int *letter_flag, unsigned int *hyp
 
 void name_sort(char (*)[BUF_SIZE + 1], unsigned int);
 static void name_swap(char *, char *);
-void name_count(char (*)[BUF_SIZE + 1], int *, unsigned int);
-void name_print(char (*)[BUF_SIZE + 1], int *, unsigned int);
+void name_count(char (*)[BUF_SIZE + 1], unsigned int *, unsigned int);
+void name_print(char (*)[BUF_SIZE + 1], unsigned int *, unsigned int);
 
 void lab_6(void)
 {
@@ -466,7 +465,16 @@ void lab_6(void)
 		getchar();
 	}
 	name_sort(data, length);
-	name_print(data, count, length);
+	name_count(data, count, length);
+	
+	name_print(data, count, 2);
+	
+	/*test data:
+3
+Spain Donna Elvira
+England Jane Doe
+Spain Donna Anna
+	*/
 }
 
 void name_sort(char (*data)[BUF_SIZE + 1], unsigned int length)
@@ -497,18 +505,36 @@ static inline void name_swap(char *X, char *Y)
 	}
 }
 
-void name_count(char (*data)[BUF_SIZE + 1], int *count, unsigned int length)
+void name_count(char (*data)[BUF_SIZE + 1], unsigned int *count, unsigned int length)
 {
-	;
+	unsigned int i = 0, j = 0, offset = 1;
+
+	while(i < length)
+	{
+		if(strcmp(data[i], data[i + offset]) == 0)
+		{
+			count[j] += 1;
+			offset 	 += 1;
+		}
+		else
+		{
+			i 		 += 1;
+			j 		 += 1;
+			offset 	  = 1;
+		}
+	}
 }
 
-void name_print(char (*result)[BUF_SIZE + 1], int *count, unsigned int length)
+void name_print(char (*result)[BUF_SIZE + 1], unsigned int *count, unsigned int length)
 {
-	unsigned int i;
+	unsigned int i = 0, j = 0;
 
-	for(i = 0; i < length; ++i)
+	//Using two pointer.
+	while(i < length)
 	{
-		printf("%s %d\n", result[i], count[i]);
+		printf("%s %d\n", result[i], count[j] + 1);
+		i += count[j] + 1;
+		j += 1;
 	}
 }
 
