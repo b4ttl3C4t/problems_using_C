@@ -486,10 +486,15 @@ void name_sort(char (*data)[BUF_SIZE + 1], unsigned int length)
 
 static inline void name_swap(char *X, char *Y)
 {
-	static char *temp;
-	temp = X;
-	X = Y;
-	Y = temp;
+	static char temp[BUF_SIZE + 1] = {'\0'};
+	static unsigned int i = 0;
+
+	for(i = 0; i < BUF_SIZE; ++i)
+	{
+		temp[i] = X[i];
+		X[i] 	= Y[i];
+		Y[i] 	= temp[i];
+	}
 }
 
 void name_count(char (*data)[BUF_SIZE + 1], int *count, unsigned int length)
