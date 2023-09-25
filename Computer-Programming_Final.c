@@ -442,10 +442,10 @@ char letter_to_number_table(char c, unsigned int *letter_flag, unsigned int *hyp
 #define STR(x) #x
 #define XSTR(x) STR(x)
 
-void name_sort(char (*)[BUF_SIZE + 1], unsigned int);
-static void name_swap(char *, char *);
-void name_count(char (*)[BUF_SIZE + 1], unsigned int *, unsigned int);
-void name_print(char (*)[BUF_SIZE + 1], unsigned int *, unsigned int);
+void		 name_sort(char (*)[BUF_SIZE + 1], unsigned int);
+static void  name_swap(char *, char *);
+unsigned int name_count(char (*)[BUF_SIZE + 1], unsigned int *, unsigned int);
+void 		 name_print(char (*)[BUF_SIZE + 1], unsigned int *, unsigned int);
 
 void lab_6(void)
 {
@@ -459,15 +459,15 @@ void lab_6(void)
 	scanf("%u", &length);
 	getchar();
 
+	//Inputing data.
 	for(i = 0; i < length; ++i)
 	{
 		scanf("%"XSTR(BUF_SIZE)"[^ ]%*[^\n]", data[i]);
 		getchar();
 	}
 	name_sort(data, length);
-	name_count(data, count, length);
-	
-	name_print(data, count, 2);
+	unsigned int count_length = name_count(data, count, length);
+	name_print(data, count, count_length);
 	
 	/*test data:
 3
@@ -492,6 +492,7 @@ void name_sort(char (*data)[BUF_SIZE + 1], unsigned int length)
 	}
 }
 
+//Just swaping the string.
 static inline void name_swap(char *X, char *Y)
 {
 	static char temp[BUF_SIZE + 1] = {'\0'};
@@ -505,7 +506,8 @@ static inline void name_swap(char *X, char *Y)
 	}
 }
 
-void name_count(char (*data)[BUF_SIZE + 1], unsigned int *count, unsigned int length)
+//Counting the identical string to unsigned int array *count* .
+unsigned int name_count(char (*data)[BUF_SIZE + 1], unsigned int *count, unsigned int length)
 {
 	unsigned int i = 0, j = 0, offset = 1;
 
@@ -523,6 +525,7 @@ void name_count(char (*data)[BUF_SIZE + 1], unsigned int *count, unsigned int le
 			offset 	  = 1;
 		}
 	}
+	return j;
 }
 
 void name_print(char (*result)[BUF_SIZE + 1], unsigned int *count, unsigned int length)
