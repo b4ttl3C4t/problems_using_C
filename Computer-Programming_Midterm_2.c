@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void lab_1(int, int, int);
+void lab_1(unsigned int, unsigned int, unsigned int);
 void lab_2(void);
 void lab_3(void);
 void lab_4(void);
@@ -13,7 +13,7 @@ int main(void)
 	lab_4();
 }
 
-void lab_1(int fore, int mid, int back)
+void lab_1(unsigned int fore, unsigned int mid, unsigned int back)
 {
     unsigned int i = 0, j = 0;
 
@@ -80,7 +80,7 @@ void lab_1(int fore, int mid, int back)
 void lab_2(void)
 {
     unsigned int legnth = 0, i, j;
-    double temp, arr[10][2] = {0.0};
+    double temp, arr[10][2] = {{0.0}};
 
     scanf("%u", &legnth);
 
@@ -135,7 +135,7 @@ void lab_2(void)
 
 
 /*lab_3*/
-void Caesar_Cipher(char *, int, int);
+void Caesar_Cipher(char *, unsigned int, unsigned int);
 
 void lab_3(void)
 {
@@ -155,7 +155,7 @@ Hello world!
     */
 }
 
-void Caesar_Cipher(char *arr, int length, int offset)
+void Caesar_Cipher(char *arr, unsigned int length, unsigned int offset)
 {
     unsigned int i;
 
@@ -258,19 +258,19 @@ void lab_5(void)
 #define STR(x)  #x          //Trick: Scanning macro twice to assure the result accepted.
 #define XSTR(x) STR(x)
 
-void message_input( const unsigned int row, 
+void message_input (const unsigned int row, 
                     const unsigned int col, 
                     char str[][col][31]);
 void message_handle(const unsigned int row, 
                     const unsigned int col, 
                     char str[][col][31]);
-void output_result( char *, unsigned int);
-void result_probe(  char *, unsigned int *);
+void output_result (char *);
+void result_probe  (char *, unsigned int *);
 
 void lab_6(void)
 {
     char str[30][100][31] = {'\0'};
-    unsigned int size, i, j, k, l;
+    unsigned int size;
 
     scanf("%u", &size);
     getchar();
@@ -337,13 +337,13 @@ void message_handle( const unsigned int row,
             if(strlen(str[i][j]) == 0)
                 break;
             
-            output_result(str[i][j], MESSAGE_SIZE);
+            output_result(str[i][j]);
         }
         puts("");
     }
 }
 
-inline void output_result(char *str, unsigned int length)
+inline void output_result(char *str)
 {
     unsigned int i = 0, index = 1;
 
@@ -366,7 +366,7 @@ inline void output_result(char *str, unsigned int length)
 
 inline void result_probe(char *str, unsigned int *target)
 {
-    int j = 0;
+    unsigned int j = 0;
 
     for(j = 0; j < *target; ++j)
     {
