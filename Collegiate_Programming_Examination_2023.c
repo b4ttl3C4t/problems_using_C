@@ -6,10 +6,11 @@ static void ScrollingSign(void);
 static void AnEasyProblem(void);
 static void MagicFormula(void);
 static void SymmetricMatrix(void);
+static void ContinuedFractions(void);
 
 int main(void)
 {
-    SymmetricMatrix();
+    ContinuedFractions();
 
     return 0;
 }
@@ -163,5 +164,43 @@ BREAK:
                 matrix[i][j] = 0;
             }
         }
+    }
+}
+
+static void ContinuedFractions(void)
+{
+    unsigned int N, firstFlag;
+    unsigned int numerator, denominator, quotient, remainder;
+    unsigned int i;
+
+    scanf("%u", &N);
+    getchar();
+    for(i = 0; i < N; ++i)
+    {
+        firstFlag = 1;
+        scanf("%u%u", &numerator, &denominator);
+        
+        printf("%c", '[');
+        while(1)
+        {
+            quotient    = numerator / denominator;
+            remainder   = numerator % denominator;
+            numerator   = denominator;
+            denominator = remainder;
+
+            printf("%u", quotient);
+
+            if(remainder == 0)
+                break;
+
+            if(firstFlag)
+            {
+                firstFlag = 0;
+                printf("%c", ';');
+                continue;
+            }
+            printf("%c", ',');
+        }
+        printf("%c", ']');
     }
 }
