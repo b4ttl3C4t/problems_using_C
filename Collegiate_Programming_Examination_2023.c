@@ -4,10 +4,12 @@
 
 static void ScrollingSign(void);
 static void AnEasyProblem(void);
+static void MagicFormula(void);
+static void SymmetricMatrix(void);
 
 int main(void)
 {
-    AnEasyProblem();
+    SymmetricMatrix();
 
     return 0;
 }
@@ -84,6 +86,81 @@ static void AnEasyProblem(void)
             {
                 printf("%d\n", d_table[j]);
                 break;
+            }
+        }
+    }
+}
+
+static void MagicFormula(void)
+{
+    int a, b, c, d, L;
+    unsigned int count, i, result;
+
+    while(1)
+    {
+        count = 0;
+        scanf("%d%d%d%d%d", &a, &b, &c, &d, &L);
+
+        if(a == 0 && b == 0 && c == 0 && d == 0 && L == 0 )
+        {
+            break;
+        }
+
+        for(i = 0; i <= L; ++i)
+        {
+            result = a*i*i + b*i + c;
+            if(result % d == 0)
+            {
+                ++count;
+            }
+        }
+        printf("%u\n", count);
+    }
+}
+
+static void SymmetricMatrix(void)
+{
+    int matrix[100][100] = {0};
+    unsigned int i, j;
+    unsigned int left, right;
+
+    unsigned int number, N;
+    scanf("%u", &number);
+    getchar();
+
+    while(number--)
+    {
+        scanf("N = %u", &N);
+        getchar();
+
+        for(i = 0; i < N; ++i)
+        {
+            for(j = 0; j < N; ++j)
+            {
+                scanf("%u", &matrix[i][j]);
+            }
+            getchar();
+        }
+
+        for(left = 0, right = N - 1; left < right; ++left, --right)
+        {
+            for(j = 0; j < N; ++j)
+            {
+                if(matrix[left][j] != matrix[right][N - 1 - j])
+                {
+                    printf("%s\n", "Non-symmetric");
+                    goto BREAK;
+                }
+            }
+        }
+        printf("%s\n", "Symmetric");
+
+BREAK:
+        for(i = 0; i < N; ++i)
+        {
+            for(j = 0; j < N; ++j)
+            {
+                matrix[i][j] = 0;
             }
         }
     }
