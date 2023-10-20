@@ -7,10 +7,12 @@ static void AnEasyProblem(void);
 static void MagicFormula(void);
 static void SymmetricMatrix(void);
 static void ContinuedFractions(void);
+static void PrimaryArithmetic(void);
+static void AMinimumLandPrice(void);
 
 int main(void)
 {
-    ContinuedFractions();
+    AMinimumLandPrice();
 
     return 0;
 }
@@ -202,5 +204,137 @@ static void ContinuedFractions(void)
             printf("%c", ',');
         }
         printf("%c", ']');
+    }
+}
+
+static int char2int(char ch)
+{
+    return ch - '0';
+}
+
+static void PrimaryArithmetic(void)
+{
+    char op1[10] = {0}, op2[10] = {0};
+    unsigned int carry, i, count, flag;
+
+    scanf("%s %s", op1, op2);
+    getchar();
+
+    while(op1[0]!='0' || op2[0]!='0')
+    {
+        for(i = 0, count = 0; i < 10; ++i)
+        {
+            carry = flag = 0;
+
+            carry += flag;
+            if(op1[i] != '\0')
+                carry += char2int(op1[i]);
+            if(op2[i] != '\0')
+                carry += char2int(op2[i]);
+            flag = carry >= 10;
+
+            if(flag)
+            {
+                ++count;
+            }
+        }
+
+        if(!count)
+        {
+            printf("No carry operation.\n");
+        }
+        if(count == 1)
+        {
+            printf("1 carry operation.\n");
+        }
+        if(count > 1)
+        {
+            printf("%u carry operations.\n", count);
+        }
+        
+        scanf("%s %s", op1, op2);
+        getchar();
+    }
+}
+
+static void sort(unsigned int *arr)
+{
+    static unsigned int i, j, temp;
+    
+    for(i = 0; i < 40; ++i)
+    {
+        for(j = 0; j < 39; ++j)
+        {
+            if(arr[j] > arr[j + 1])
+            {
+                temp    = arr[j];
+                arr[j]  = arr[j+1];
+                arr[j+1]= temp;
+            }
+        }
+    }
+}
+
+static unsigned long long int my_pow(unsigned int n, unsigned int count)
+{
+    static long long int i, base;
+
+    for(i = 0, base = n; i < count; ++i)
+    {
+        n *= base;
+    }
+
+    return n;
+}
+
+static void AMinimumLandPrice(void)
+{
+    unsigned int buf[40];
+    unsigned int T, i, j, count;
+    unsigned int budget;
+
+    scanf("%u", &T);
+    getchar();
+
+    for(i = 0; i < T; ++i)
+    {
+        budget = count = 0;
+
+        for(j = 0; j < 40; ++j)
+        {
+            buf[j] = 0;
+        }
+
+        for(j = 0; j < 40; ++j)
+        {
+            scanf("%u", &buf[j]);
+            getchar();
+
+            if(buf[j] == 0)
+            {
+                break;
+            }
+        }
+        sort(buf);
+        
+        for(j = 39; j >= 0; --j)
+        {
+            if(buf[j] == 0)
+            {
+                break;
+            }
+            
+            budget += 2 * my_pow(buf[j], count);
+            ++count;
+        }
+
+        if(budget > 5000000)
+        {
+            printf("Too expensive\n");
+        }
+        else
+        {
+            printf("%u\n", budget);
+        }
     }
 }
