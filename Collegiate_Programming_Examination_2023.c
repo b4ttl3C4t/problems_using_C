@@ -9,10 +9,11 @@ static void SymmetricMatrix(void);
 static void ContinuedFractions(void);
 static void PrimaryArithmetic(void);
 static void AMinimumLandPrice(void);
+static void Inception(void);
 
 int main(void)
 {
-    AMinimumLandPrice();
+    Inception();
 
     return 0;
 }
@@ -335,6 +336,42 @@ static void AMinimumLandPrice(void)
         else
         {
             printf("%u\n", budget);
+        }
+    }
+}
+
+static void Inception(void)
+{
+    char buf[10000][10] = {0};
+    int pointer = 0;
+    unsigned int instruction;
+
+    scanf("%u", &instruction);
+    getchar();
+
+    for(unsigned int i = 0; i < instruction; ++i)
+    {
+        scanf("%s", buf[pointer]);
+        getchar();
+
+        if(!strcmp(buf[pointer], "Sleep"))
+        {
+            scanf("%s", buf[pointer]);
+            getchar();
+
+            ++pointer;
+        }
+        else if(!strcmp(buf[pointer], "Test"))
+        {
+            if(pointer <= 0)
+                printf("%s\n", "Not in a dream");
+            else
+                printf("%s\n", buf[pointer - 1]);
+        }
+        else if(!strcmp(buf[pointer], "Kick"))
+        {
+            if(pointer != -1)
+                --pointer;
         }
     }
 }
