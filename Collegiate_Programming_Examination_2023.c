@@ -10,11 +10,16 @@ static void ContinuedFractions(void);
 static void PrimaryArithmetic(void);
 static void AMinimumLandPrice(void);
 static void Inception(void);
+static void Parity(void);
+static void PrimeFrequency(void);
+static void SummingDigits(void);
+static void HowOldAreYou(void);
+static void AncientCipher(void);
 
+//AncientCipher
 int main(void)
 {
-    Inception();
-
+    AncientCipher();
     return 0;
 }
 
@@ -374,4 +379,197 @@ static void Inception(void)
                 --pointer;
         }
     }
+}
+
+static void Parity(void)
+{
+    unsigned int count, number, parity, i;
+    unsigned int buf[20] = {0};
+
+    scanf("%u", &number);
+    getchar();
+
+    while(number)
+    {
+        parity = i = 0;
+
+        printf("The parity of ");
+        while(number)
+        {
+            parity += number & 1;
+            buf[i++] = number & 1;
+            number >>= 1;
+        }
+        for(int j = i - 1; j >= 0; --j)
+            printf("%u", buf[j]);
+
+        printf(" is %u (mod 2).\n", parity);
+
+        scanf("%u", &number);
+        getchar();
+    }
+}
+
+static int isPrime(int number)
+{
+    for(int i = 2; i*i <= number; ++i)
+    {
+        if(number % i == 0)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+static void PrimeFrequency(void)
+{
+    unsigned int count[62] = {0};
+    char table[62] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+
+    char buf[1000] = {'\0'};
+    unsigned int T, length, flag;
+
+    scanf("%u", &T);
+    getchar();
+
+    for(int i = 0; i < T; ++i)
+    {
+        for(int j = 0; j < 62; ++j)
+        {
+            count[j] = 0;
+        }
+
+        scanf("%209[0-9a-zA-Z][^\n]", buf);
+        getchar();
+        length = strlen(buf);
+
+        for(int j = 0; j < length; ++j)
+        {
+            for(int k = 0; k < 26; ++k)
+            {
+                if(buf[j] == table[k])
+                {
+                    ++count[k];
+                    break;
+                }
+            }
+        }
+        
+        printf("Case %u: ", i + 1);
+        flag = 1;
+        for(int j = 0; j < 26; ++j)
+        {
+            if(count[j] > 1 && isPrime(count[j]))
+            {
+                flag = 0;
+                printf("%c", table[j]);
+            }
+        }
+        if(flag)
+        {
+            printf("empty");
+        }
+        printf("\n");
+    }
+}
+
+static void SummingDigits(void)
+{
+    long long int n, i;
+    int buf[10] = {0};
+
+    scanf("%lld", &n);
+    getchar();
+
+    while(n)
+    {
+        for(i = 0; i < 10; ++i)
+        {
+            buf[i] = 0;
+        }
+
+        for(i = 0; i < 10 && n; ++i)
+        {
+            buf[i] = n % 10;
+            n /= 10;
+        }
+
+        for(i = 0; i < 10; ++i)
+        {
+            n += buf[i];
+        }
+
+        if(n / 10)
+        {
+            continue;
+        }
+        printf("%lld\n", n);
+
+        scanf("%lld", &n);
+        getchar();
+    }
+}
+
+static void HowOldAreYou(void)
+{
+    int n, sum;
+    int D_n, M_n, Y_n;
+    int D_o, M_o, Y_o;
+
+    scanf("%d", &n);
+    getchar();
+
+    for(int i = 1; i <= n; ++i)
+    {
+        sum = 0;
+        
+        scanf("%d/%d/%d", &D_n, &M_n, &Y_n);
+        getchar();
+        scanf("%d/%d/%d", &D_o, &M_o, &Y_o);
+        getchar();
+
+        sum += Y_n - Y_o;
+        if(M_o > M_n || (M_o <= M_n && D_o > D_n))
+            sum -= 1;
+
+        printf("Case #%d: ", i);
+        if(sum < 0)
+            printf("Invalid birth date\n");
+        else if(sum > 130)
+            printf("Check birth date\n");
+        else
+            printf("%d\n", sum);
+    }
+}
+
+typedef struct Index_s
+{
+    char index;
+    char data;
+}Index;
+
+static int inTheTable(char ch, Index *table)
+{
+    for(int k = 0; table[k].index != '\0'; ++k)
+    {
+        if(ch == table[k].index)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static void AncientCipher(void)
+{
+    char input[2][100]  = {'\0'};
+    Index table[100]    = {'\0'};
+    int n, length, flag;
+    char temp;
+    
+    scanf("%d", &n);
+    getchar();
+
+    
 }
