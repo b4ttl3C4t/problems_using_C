@@ -14,12 +14,13 @@ static void Parity(void);
 static void PrimeFrequency(void);
 static void SummingDigits(void);
 static void HowOldAreYou(void);
-static void AncientCipher(void);
+static void DivideButNotQuiteConquer(void);
+static void Bee(void);
 
-//AncientCipher
+//Bee
 int main(void)
 {
-    AncientCipher();
+    Bee();
     return 0;
 }
 
@@ -543,33 +544,66 @@ static void HowOldAreYou(void)
     }
 }
 
-typedef struct Index_s
+static void DivideButNotQuiteConquer(void)
 {
-    char index;
-    char data;
-}Index;
+    long long int number, pair1, pair2, flag, temp;
 
-static int inTheTable(char ch, Index *table)
-{
-    for(int k = 0; table[k].index != '\0'; ++k)
-    {
-        if(ch == table[k].index)
-        {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-static void AncientCipher(void)
-{
-    char input[2][100]  = {'\0'};
-    Index table[100]    = {'\0'};
-    int n, length, flag;
-    char temp;
-    
-    scanf("%d", &n);
+    scanf("%lld", &number);
     getchar();
 
-    
+    for(int i = 0; i < number; ++i)
+    {
+        scanf("%lld%lld", &pair1, &pair2);
+        getchar();
+
+        for(int j = 0; ;++j)
+        {
+            temp = pair2;
+
+            for(int k = 0; k < j; ++k)
+            {
+                temp *= pair2;
+            }
+            if(temp == pair1)
+            {
+                flag = 1;
+                break;
+            }
+            if(temp < 0 || pair1 < temp)
+            {
+                flag = 0;
+                break;
+            }
+        }
+
+        if(flag)
+        {
+            while(pair1 != 0)
+            {
+                printf("%lld ", pair1);
+                pair1 /= pair2;
+            }
+        }
+        else
+        {
+            printf("Boring!");
+        }
+        printf("\n");
+    }
+}
+
+static void Bee(void)
+{
+    int number;
+
+    scanf("%d", &number);
+    getchar();
+
+    while(number != -1)
+    {
+        printf("%d%d\n", pow(2, number - 1), pow(2, number) - 1);
+
+        scanf("%d", &number);
+        getchar();
+    }
 }
