@@ -592,18 +592,39 @@ static void DivideButNotQuiteConquer(void)
     }
 }
 
+static inline unsigned int fib(unsigned int n)
+{
+    static unsigned int i, temp1, temp2, temp3;
+
+    temp1 = temp2 = temp3 = 1;
+    for(i = 1; i < n; ++i)
+    {
+        temp3 = temp2 + temp1;
+        temp2 = temp1;
+        temp1 = temp3;
+    }
+
+    return temp3;
+}
+
 static void Bee(void)
 {
-    int number;
+    unsigned int number, sum1, sum2;
 
-    scanf("%d", &number);
+    scanf("%u", &number);
     getchar();
 
     while(number != -1)
     {
-        printf("%d%d\n", pow(2, number - 1), pow(2, number) - 1);
+        sum1 = sum2 = 0;
+        for(int i = 0; i <= number; ++i)
+        {
+            sum2 = sum1;
+            sum1 += fib(i);
+        }
+        printf("%u %u\n", sum2, sum1);
 
-        scanf("%d", &number);
+        scanf("%u", &number);
         getchar();
     }
 }
