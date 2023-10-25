@@ -15,12 +15,14 @@ static void PrimeFrequency(void);
 static void SummingDigits(void);
 static void HowOldAreYou(void);
 static void DivideButNotQuiteConquer(void);
+static void SloganLearningOfPrincess(void);
 static void Bee(void);
+static void TheCountingProblem(void);
 
-//Bee
+//TheCountingProblem
 int main(void)
 {
-    Bee();
+    TheCountingProblem();
     return 0;
 }
 
@@ -626,5 +628,86 @@ static void Bee(void)
 
         scanf("%u", &number);
         getchar();
+    }
+}
+
+static void SloganLearningOfPrincess(void)
+{
+    int N, Q;
+    char table[20][2][1000];
+    char cmp_str[1000];
+
+    scanf("%d", &N);
+    getchar();
+
+    for(int i = 0; i < N; ++i)
+    {
+        scanf("%999[a-z ][^\n]", table[i][0]);
+        getchar();
+        scanf("%999[a-z ][^\n]", table[i][1]);
+        getchar();
+    }
+
+    scanf("%d", &Q);
+    getchar();
+
+    for(int i = 0; i < Q; ++i)
+    {
+        scanf("%999[a-z ][^\n]", cmp_str);
+        getchar();
+
+        for(int j = 0; j < N; ++j)
+        {
+            if(!strcmp(cmp_str, table[j][0]))
+            {
+                printf("%s\n", table[j][1]);
+                break;
+            }
+        }
+    }
+}
+
+static void TheCountingProblem(void)
+{
+    int n, m, i;
+    int lower, upper;
+    int count[10] = {0};
+
+    scanf("%d%d", &n, &m);
+    getchar();
+
+    while(n != 0 || m != 0)
+    {
+        lower = n;
+        upper = m;
+        if(lower > upper)
+        {
+            lower = lower ^ upper;
+            upper = lower ^ upper;
+            lower = lower ^ upper;
+        }
+
+        for(i = lower; i <= upper; ++i)
+        {
+            m = i;
+            while(m)
+            {
+                ++count[m % 10];
+                m /= 10;
+            }
+        }
+
+        for(i = 0; i < 10; ++i)
+        {
+            printf("%d ", count[i]);
+        }
+        printf("\n");
+
+        scanf("%d%d", &n, &m);
+        getchar();
+        for(i = 0; i < 10; ++i)
+        {
+            count[i] = 0;
+        }
     }
 }
