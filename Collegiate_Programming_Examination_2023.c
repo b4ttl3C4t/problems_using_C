@@ -18,11 +18,12 @@ static void DivideButNotQuiteConquer(void);
 static void SloganLearningOfPrincess(void);
 static void Bee(void);
 static void TheCountingProblem(void);
+static void TheBookThief(void);
 
-//TheCountingProblem
+//TheBookThief
 int main(void)
 {
-    TheCountingProblem();
+    TheBookThief();
     return 0;
 }
 
@@ -709,5 +710,29 @@ static void TheCountingProblem(void)
         {
             count[i] = 0;
         }
+    }
+}
+
+static void TheBookThief(void)
+{
+    int number, sum, i;
+
+    scanf("%d", &number);
+    getchar();
+
+    while(number != 0)
+    {
+        sum = i = 0;
+        do
+        {
+            sum += i;
+            ++i;
+        }while(sum <= number);
+        sum -= number;
+
+        printf("%d %d\n", sum, i-1);
+
+        scanf("%d", &number);
+        getchar();
     }
 }
