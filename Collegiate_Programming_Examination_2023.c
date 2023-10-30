@@ -19,11 +19,14 @@ static void SloganLearningOfPrincess(void);
 static void Bee(void);
 static void TheCountingProblem(void);
 static void TheBookThief(void);
+static void Sales(void);
+static void AlternateTask(void);
+static void MutantFlatworldExplorers(void);
 
-//TheBookThief
+//MutantFlatworldExplorers
 int main(void)
 {
-    TheBookThief();
+    MutantFlatworldExplorers();
     return 0;
 }
 
@@ -734,5 +737,218 @@ static void TheBookThief(void)
 
         scanf("%d", &number);
         getchar();
+    }
+}
+
+static void Sales(void)
+{
+    int n, m, i, j, k, sum;
+    int buf[1000]   = {0};
+    int count[1000] = {0};
+
+    scanf("%d", &n);
+    getchar();
+
+    for(i = 0; i < n; ++i)
+    {
+        scanf("%d", &m);
+        getchar();
+
+        sum = 0;
+        for(j = 0; j < m; ++j)
+        {
+            scanf("%d", &buf[j]);
+            getchar();
+
+            for(k = 0; k < j; ++k)
+            {
+                if(buf[k] <= buf[j])
+                {
+                    ++count[j];
+                }
+            }
+            sum += count[j];
+        }
+
+        printf("%d\n", sum);
+
+        for(j = 0; j < m; ++j)
+        {
+            buf[j]   = 0;
+            count[j] = 0;
+        }
+    }
+}
+
+static inline int FactorSum(int n)
+{
+    static int i, sum;
+
+    sum = 0;
+    for (i = 1; i <= n; i++)
+    {
+        if(n % i == 0)
+        {
+            sum += i;
+        }
+    }
+
+    return sum;
+}
+
+static void AlternateTask(void)
+{
+    int n, i, sum, count = 0;
+
+    scanf("%d", &n);
+    getchar();
+
+    while(n)
+    {
+        ++count;
+        sum = 1;
+
+        if(1 == n)
+        {
+            printf("Case %d: 1\n", count);
+            scanf("%d", &n);
+            getchar();
+            continue;
+        }
+
+        for(i = 1; i < n; ++i)
+        {
+            if(n == FactorSum(i))
+            {
+                printf("Case %d: %d\n", count, i);
+                break;
+            }
+        }
+
+        if(i == n)
+        {
+            printf("Case %d: -1\n", count);
+        }
+
+        scanf("%d", &n);
+        getchar();
+    }
+}
+
+static void MutantFlatworldExplorers(void)
+{
+    int count, i, j;
+    
+    int n, m;
+    int x, y;
+    char direct_c;
+    int  direct, flag;
+
+    int FlatTable[50][50] = {0};
+    char instruction[101] = {'\0'};
+    enum direction {up, right, down, left};
+    struct forward_t
+    {
+        int x;
+        int y;
+    };
+    const struct forward_t forward[4] = 
+    {
+        {0, 1}, {1, 0}, {0, -1}, {-1, 0}
+    };
+
+    scanf("%d", &count);
+    getchar();
+
+    scanf("%d%d", &n, &m);
+    getchar();
+
+    for(i = 0; i < n; ++i)
+    {
+        for(j = 0; j < m; ++j)
+        {
+            FlatTable[i][j] = 1;
+        }
+    }
+
+    for(i = 0; i < count; ++i)
+    {
+        scanf("%d%d%c", &x, &y, &direct_c);
+        getchar();
+
+        flag = 0;
+
+        switch (direct_c)
+        {
+        case 'N':
+            direct = up;
+            break;
+        
+        case 'E':
+            direct = right;
+            break;
+
+        case 'W':
+            direct = left;
+            break;
+
+        case 'S':
+            direct = down;
+            break;
+        }
+
+        scanf("%s", instruction);
+        getchar();
+
+        for(j = 0; instruction[j] != '\0'; ++j)
+        {
+            direct_c = instruction[j++];
+
+            switch (direct_c)
+            {
+            case 'L':
+                direct = (direct + 3) % 4;
+                break;
+            
+            case 'R':
+                direct = (direct + 1) % 4;
+                break;
+
+            case 'F':
+                x += forward[direct].x;
+                y += forward[direct].y;
+                if(FlatTable[x][y] == 0)
+                {
+                    flag = 1;
+                }
+                break;
+            }
+            printf("\n|%d %d %d|", direct, x, y);
+        }
+        
+        switch(direct)
+        {
+        case up:
+            direct_c = 'N';
+            break;
+        case right:
+            direct_c = 'E';
+            break;
+        case left:
+            direct_c = 'W';
+            break;
+        case down:
+            direct_c = 'S';
+            break;
+        }
+        printf("%d %d %c", x, y, direct_c);
+        if(flag)
+        {
+            printf(" LOST\n");
+        }
+        else
+        {
+            printf("\n");
+        }
     }
 }
