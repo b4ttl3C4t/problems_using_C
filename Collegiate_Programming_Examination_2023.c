@@ -899,11 +899,11 @@ static void MutantFlatworldExplorers(void)
 
         scanf("%s", instruction);
         getchar();
-
+        
         for(j = 0; instruction[j] != '\0'; ++j)
         {
-            direct_c = instruction[j++];
-
+            direct_c = instruction[j];
+            
             switch (direct_c)
             {
             case 'L':
@@ -923,7 +923,6 @@ static void MutantFlatworldExplorers(void)
                 }
                 break;
             }
-            printf("\n|%d %d %d|", direct, x, y);
         }
         
         switch(direct)
