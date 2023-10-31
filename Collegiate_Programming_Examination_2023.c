@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 static void ScrollingSign(void);
 static void AnEasyProblem(void);
@@ -21,12 +22,13 @@ static void TheCountingProblem(void);
 static void TheBookThief(void);
 static void Sales(void);
 static void AlternateTask(void);
-static void MutantFlatworldExplorers(void);
+static void StrategyGame(void);
+static void DecodetheMadman(void);
 
-//MutantFlatworldExplorers
+//DecodetheMadman
 int main(void)
 {
-    MutantFlatworldExplorers();
+    DecodetheMadman();
     return 0;
 }
 
@@ -835,119 +837,104 @@ static void AlternateTask(void)
     }
 }
 
-static void MutantFlatworldExplorers(void)
+static void StrategyGame(void)
 {
-    int count, i, j;
-    
-    int n, m;
-    int x, y;
-    char direct_c;
-    int  direct, flag;
-
-    int FlatTable[50][50] = {0};
-    char instruction[101] = {'\0'};
-    enum direction {up, right, down, left};
-    struct forward_t
+    int J, R, i, j;
+    unsigned char count[500][500] = {0};
+    struct point_s
     {
-        int x;
-        int y;
-    };
-    const struct forward_t forward[4] = 
-    {
-        {0, 1}, {1, 0}, {0, -1}, {-1, 0}
-    };
+        unsigned char point;
+        unsigned char index;
+    }point[500] = {0}, temp;
 
-    scanf("%d", &count);
+    scanf("%d%d", &J, &R);
     getchar();
 
-    scanf("%d%d", &n, &m);
+    while(J != 0 && R !=0)
+    {
+        for(i = 0; i < R; ++i)
+        {
+            for(j = 0; j < J; ++j)
+            {
+                scanf("%hhu", &count[i][j]);
+                getchar();
+            }
+        }
+
+        for(i = 0; i < J; ++i)
+        {
+            point[i].index = i;
+            for(j = 0; j < R; ++j)
+            {
+                point[i].point += count[j][i];
+            }
+        }
+
+        for(i = 0; i < J - 1; ++i)
+        {
+            for(j = 0; j < J - 1; ++j)
+            {
+                if(point[j].point > point[j + 1].point)
+                {
+                    temp            = point[j + 1];
+                    point[j + 1]    = point[j];
+                    point[j]        = temp;
+                }
+            }
+        }
+        
+        printf("%hhu\n", point[J - 1].index + 1);
+        
+        for(i = 0; i < R; ++i)
+        {
+            for(j = 0; j < J; ++j)
+            {
+                count[i][j] = 0;
+            }
+            point[i].index = 0;
+            point[i].point = 0;
+        }
+
+        scanf("%d%d", &J, &R);
+        getchar();
+    }
+}
+
+static void DecodetheMadman(void)
+{
+    char buf[100] = {'\0'};
+    char keybroad[100] = {'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 'c', 'v', 'b', 'n', 'm', ',', '.'};
+    char keybroad2[100] = {'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', ' ', ' ', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ' ', ' ', 'C', 'V', 'B', 'N', 'M'};
+    char keytable[100] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'};
+    int n, i, j, k;
+
+    scanf("%d", &n);
     getchar();
 
     for(i = 0; i < n; ++i)
     {
-        for(j = 0; j < m; ++j)
-        {
-            FlatTable[i][j] = 1;
-        }
-    }
-
-    for(i = 0; i < count; ++i)
-    {
-        scanf("%d%d%c", &x, &y, &direct_c);
+        scanf("%99[][a-zA-Z ;',.][^\n]", buf);
         getchar();
 
-        flag = 0;
-
-        switch (direct_c)
+        for(j = 0; buf[j] != '\0'; ++j)
         {
-        case 'N':
-            direct = up;
-            break;
-        
-        case 'E':
-            direct = right;
-            break;
-
-        case 'W':
-            direct = left;
-            break;
-
-        case 'S':
-            direct = down;
-            break;
-        }
-
-        scanf("%s", instruction);
-        getchar();
-        
-        for(j = 0; instruction[j] != '\0'; ++j)
-        {
-            direct_c = instruction[j];
-            
-            switch (direct_c)
+            if(buf[j] == ' ')
             {
-            case 'L':
-                direct = (direct + 3) % 4;
-                break;
+                printf("%c", ' ');
+                continue;
+            }
+            if(isupper(buf[j]))
+                buf[j] = buf[j] | 32;
             
-            case 'R':
-                direct = (direct + 1) % 4;
-                break;
-
-            case 'F':
-                x += forward[direct].x;
-                y += forward[direct].y;
-                if(FlatTable[x][y] == 0)
+            for(k = 0; keybroad[k] != '\0'; ++k)
+            {
+                if(buf[j] == keybroad[k])
                 {
-                    flag = 1;
+                    printf("%c", keytable[k]);
+                    break;
                 }
-                break;
             }
         }
-        
-        switch(direct)
-        {
-        case up:
-            direct_c = 'N';
-            break;
-        case right:
-            direct_c = 'E';
-            break;
-        case left:
-            direct_c = 'W';
-            break;
-        case down:
-            direct_c = 'S';
-            break;
-        }
-        printf("%d %d %c", x, y, direct_c);
-        if(flag)
-        {
-            printf(" LOST\n");
-        }
-        else
-        {
-            printf("\n");
-        }
+        printf("\n");
     }
 }
