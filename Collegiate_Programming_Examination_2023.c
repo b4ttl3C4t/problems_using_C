@@ -24,11 +24,12 @@ static void Sales(void);
 static void AlternateTask(void);
 static void StrategyGame(void);
 static void DecodetheMadman(void);
+static void Zeroes(void);
 
-//DecodetheMadman
+//Zeroes
 int main(void)
 {
-    DecodetheMadman();
+    Zeroes();
     return 0;
 }
 
@@ -936,5 +937,51 @@ static void DecodetheMadman(void)
             }
         }
         printf("\n");
+    }
+}
+
+static void Zeroes(void)
+{
+    int low, high;
+    int i, j, k;
+    unsigned long long int ten, two, five;
+    int count[50000] = {0};
+
+    scanf("%d%d", &low, &high);
+    getchar();
+
+    while(low != 0 || high != 0)
+    {
+        for(i = low; i < high; ++i)
+        {
+            ten = two = five = 0;
+
+            for(j = 0; j < 100; ++j)
+            {
+                if(i % 10 == 0)
+                {
+                    i /= 10;
+                    ++ten;
+                }
+                if(i % 2 == 0)
+                {
+                    i /= 2;
+                    ++two;
+                }
+                if(i % 5 == 0)
+                {
+                    i /= 5;
+                    ++five;
+                }
+            }
+        }
+
+        for(i = low; i < high; ++i)
+        {
+            count[i] = 0;
+        }
+        
+        scanf("%d%d", &low, &high);
+        getchar();
     }
 }
