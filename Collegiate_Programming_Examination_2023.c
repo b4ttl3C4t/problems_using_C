@@ -24,12 +24,14 @@ static void Sales(void);
 static void AlternateTask(void);
 static void StrategyGame(void);
 static void DecodetheMadman(void);
-static void Zeroes(void);
+static void DoomsDayAlgorithm(void);
+static void FindTheTelephone(void);
+static void Division(void);
 
-//Zeroes
+//Division
 int main(void)
 {
-    Zeroes();
+    Division();
     return 0;
 }
 
@@ -940,48 +942,92 @@ static void DecodetheMadman(void)
     }
 }
 
-static void Zeroes(void)
+static void DoomsDayAlgorithm(void)
 {
-    int low, high;
-    int i, j, k;
-    unsigned long long int ten, two, five;
-    int count[50000] = {0};
-
-    scanf("%d%d", &low, &high);
+    int n, i, j;
+    int M, D, sum;
+    
+    char table[][20] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    int  month[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    
+    scanf("%d", &n);
     getchar();
 
-    while(low != 0 || high != 0)
+    for(i = 0; i < n; ++i)
     {
-        for(i = low; i < high; ++i)
-        {
-            ten = two = five = 0;
+        scanf("%d%d", &M, &D);
+        getchar();
 
-            for(j = 0; j < 100; ++j)
+        sum = 4;
+        for(j = 0; j < M - 1; ++j)
+        {
+            sum += month[j];
+        }
+        sum += D;
+        sum %= 7;
+
+        printf("%s\n", table[sum]);
+    }
+}
+
+static void FindTheTelephone(void)
+{
+    char buf[31] = {'\0'};
+    int n, i;
+    int count_;
+    int count_char;
+
+    scanf("%d", &n);
+    getchar();
+
+    while(n--)
+    {
+        scanf("%30[0-9A-Z-][^\n]", buf);
+        getchar();
+
+        count_ = count_char = 0;
+        for(i = 0; buf[i] != '\0'; ++i)
+        {
+            if((buf[i] ^ 48) < 10)
             {
-                if(i % 10 == 0)
-                {
-                    i /= 10;
-                    ++ten;
-                }
-                if(i % 2 == 0)
-                {
-                    i /= 2;
-                    ++two;
-                }
-                if(i % 5 == 0)
-                {
-                    i /= 5;
-                    ++five;
-                }
+                continue;
+            }
+            switch(buf[i])
+            {
+            case 'A': case 'B': case 'C':
+                buf[i] = '2';
+                break;
+            case 'D': case 'E': case 'F':
+                buf[i] = '3';
+                break;
+            case 'G': case 'H': case 'I':
+                buf[i] = '4';
+                break;
+            case 'J': case 'K': case 'L':
+                buf[i] = '5';
+                break;
+            case 'M': case 'N': case 'O':
+                buf[i] = '6';
+                break;
+            case 'P': case 'Q': case 'R': case 'S':
+                buf[i] = '7';
+                break;
+            case 'T': case 'U': case 'V':
+                buf[i] = '8';
+                break;
+            case 'W': case 'X': case 'Y': case 'Z':
+                buf[i] = '9';
+                break;
+            case '-':
+                ++count_;
+                break;
+            }
+            if(buf[i] != '-')
+            {
+                ++count_char;
             }
         }
 
-        for(i = low; i < high; ++i)
-        {
-            count[i] = 0;
-        }
-        
-        scanf("%d%d", &low, &high);
-        getchar();
+        printf("%s %d %d\n", buf, count_char, count_);
     }
 }
