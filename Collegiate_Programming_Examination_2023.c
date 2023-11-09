@@ -31,7 +31,7 @@ static void Division(void);
 //Division
 int main(void)
 {
-    Division();
+    SymmetricMatrix();
     return 0;
 }
 
@@ -167,7 +167,12 @@ static void SymmetricMatrix(void)
         {
             for(j = 0; j < N; ++j)
             {
-                if(matrix[left][j] != matrix[right][N - 1 - j])
+                if(left == j)
+                {
+                    continue;
+                }
+
+                if(matrix[j][left] != matrix[N - 1 - j][right] || matrix[left][j] < 0 || matrix[right][N - 1 - j] < 0)
                 {
                     printf("%s\n", "Non-symmetric");
                     goto BREAK;
