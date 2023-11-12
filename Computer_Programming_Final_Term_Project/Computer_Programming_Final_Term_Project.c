@@ -72,18 +72,22 @@ bool (*volatile const PROCESS[METHOD_STEP])(void) =
     calibrate_code, 
     binary_code, 
     reverse_code, 
-    split_check
-    //get_data, 
-    //empty_buffer, 
+    split_check, 
+    get_data, 
+    print_data
 };
 
 //Internal function.
-static inline int8_t    char_to_int     (int8_t);
 static inline double    bias_lower      (double);
 static inline double    bias_upper      (double);
-static inline void      data_weight     (uint32_t, uint32_t *);
+static inline int8_t    char_to_weight  (char);
+static inline void      code_to_data    (uint32_t, uint32_t *);
+static inline bool      data_decode     (uint32_t);
 static inline uint32_t  data_length     (void);
-static inline bool      decode_table    (uint32_t);
+
+
+
+
 
 int main(void)
 {
@@ -97,7 +101,7 @@ int main(void)
         fgetc(stdin);
         
         length = data_length();
-        printf("%d|\n", length);
+
         if(m == 0)
         {
             break;
@@ -111,11 +115,7 @@ int main(void)
                 break;
             }
         }
-
-        for(each = 0; each < m; ++each)
-        {
-            printf("%2d ", code[each]);
-        }
+        empty_buffer();
     }
     
     //fclose(file_stream);
@@ -126,18 +126,13 @@ int main(void)
 //Checking whether the barcode's boundary match the data format.
 bool boundary_check(void)
 {
-    if(m % (DATA_WIDTH + 1) != DATA_WIDTH)
+    if( m % (DATA_WIDTH + 1) != DATA_WIDTH ||
+        m < LOWER_WIDTH ||
+        m > UPPER_WIDTH)
     {
-        return false;
-    }
-
-    if(m < LOWER_WIDTH)
-    {
-        return false;
-    }
-
-    if(m > UPPER_WIDTH)
-    {
+        //Absorbing the input data because of the invalid *m*.
+        scan_code();
+        empty_buffer();
         return false;
     }
     
@@ -304,9 +299,9 @@ bool split_check(void)
 {
     //Probing whether each split bar is light narrow bar.
     //* + 2 * means that you have to consider the check code C K.
-    for(each = 0; each < length + 2; ++each)
+    for(each = 0; each <= length + 2; ++each)
     {
-        if(code[each * DATA_WIDTH] != 0)
+        if(code[DATA_WIDTH + each * (DATA_WIDTH + 1)] != 0)
         {
             return false;
         }
@@ -315,28 +310,77 @@ bool split_check(void)
     return true;
 }
 
+//Translating information from binary code to data format.
 bool get_data(void)
 {
-    for(each = 0 + DATA_WIDTH;
-        each < m - DATA_WIDTH;
-        each += DATA_WIDTH)
+    //Getting the data from binary code.
+    for(i = 1 + DATA_WIDTH, j = 0;
+        i < m - DATA_WIDTH;
+        i += DATA_WIDTH + 1, ++j)
     {
-        data_weight(each, code + each);
+        code_to_data(j, code + i);
+    }
+
+    //Decoding the data to character based on its value.
+    for(each = 0; each < length; ++each)
+    {
+        if(!data_decode(each))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+//Setting the buffer to zero.
+bool empty_buffer(void)
+{
+    for(each = 0; each < m; ++each)
+    {
+        code[each] = code_buf[each] = 0;
     }
 
     for(each = 0; each < length; ++each)
     {
-        if(decode_table(each))
-        {
-            return false;
-        }
+        data[each].character = '\0';
     }
 
     return true;
 }
 
-static inline int8_t char_to_int(int8_t ch)
+
+
+
+
+//The print function for test.
+bool print_code(void)
 {
+    for(each = 0; each < m; ++each)
+    {
+        printf("%3d", code[each]);
+    }
+
+    return true;
+}
+
+bool print_data(void)
+{
+    printf("%s", (char *)data);
+
+    return true;
+}
+
+
+
+
+
+//The implementation of the internal functions.
+static inline int8_t char_to_weight(char ch)
+{
+    if(ch == '-')
+        return 10;
+    
     return ch ^ 48;
 }
 
@@ -352,22 +396,22 @@ double bias_upper(double x)
     return (x + x * BIAS_RANGE);
 }
 
-static inline void data_weight(uint32_t index, uint32_t *code_index)
+static inline void code_to_data(uint32_t index, uint32_t *code_index)
 {
     //Storing each corresponding numbers to data.
-    data[index].b1 = code_index[0];
-    data[index].b2 = code_index[1];
+    data[index].b1 = code_index[4];
+    data[index].b2 = code_index[3];
     data[index].b3 = code_index[2];
-    data[index].b4 = code_index[3];
-    data[index].b5 = code_index[4];
+    data[index].b4 = code_index[1];
+    data[index].b5 = code_index[0];
 }
 
 static inline uint32_t data_length(void)
 {
-    return (m - DATA_WIDTH * 4 - 3) / 5;
+    return (m - DATA_WIDTH * 4 - 3) / 6;
 }
 
-static inline bool decode_table(uint32_t index)
+static inline bool data_decode(uint32_t index)
 {
     switch(data[index].character)
     {
