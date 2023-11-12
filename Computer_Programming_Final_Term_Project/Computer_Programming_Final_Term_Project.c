@@ -48,10 +48,21 @@ typedef union data_s
     char    character;
 } data_t;
 
+//Programming status flag.
+enum STATUS_FLAG
+{
+    STATUS_EMPTY_FLAG, 
+    STATUS_EXIT_FLAG, 
+    STATUS_BAD_FLAG, 
+    STATUS_BAD_C_FLAG, 
+    STATUS_BAD_K_FLAG, 
+};
+
 //For storing the barcode's information.
 static uint32_t code        [CODE_SIZE] = {0};
 static uint32_t code_buf    [CODE_SIZE] = {0};
 static data_t   data        [DATA_SIZE] = {'\0'};
+static uint8_t  status_code = STATUS_EMPTY_FLAG;
 
 //For interative variable.
 static uint32_t each, i, j;
@@ -63,10 +74,11 @@ static uint32_t narrow_bar,    wide_bar;
 
 //An array of constant pointers to function (void) returning boolean data type.
 //Executing the array step by step to get the information of barcode.
-bool (*volatile const PROCESS[METHOD_STEP])(void) = 
+void (*volatile const PROCESS[METHOD_STEP])(void) = 
 {
+    get_length, 
     boundary_check, 
-    scan_code, 
+    get_code, 
     sort_code, 
     take_format, 
     calibrate_code, 
@@ -81,12 +93,13 @@ bool (*volatile const PROCESS[METHOD_STEP])(void) =
 };
 
 //Internal function.
+static inline uint8_t   check_status    (void);
 static inline double    bias_lower      (double);
 static inline double    bias_upper      (double);
 static inline uint64_t  char_to_weight  (char);
 static inline char      weight_to_char  (uint64_t);
 static inline void      code_to_data    (uint32_t, uint32_t *);
-static inline bool      data_decode     (uint32_t);
+static inline uint32_t  data_decode     (uint32_t);
 static inline uint32_t  data_length     (void);
 
 
@@ -95,69 +108,65 @@ static inline uint32_t  data_length     (void);
 
 int main(void)
 {
-    //FILE *file_stream = fopen("test.txt", "r");
-    uint8_t step;
+    uint8_t step, status;
 
     while(1)
     {
-        ++count;
-        fscanf(stdin, "%d", &m);
-        fgetc(stdin);
-        
-        n = data_length();
-
-        if(m == 0)
-        {
-            break;
-        }
+        status_code = STATUS_EMPTY_FLAG;
 
         for(step = 0; step < METHOD_STEP; ++step)
         {
-            if(!PROCESS[step]())
+            PROCESS[step]();
+            printf("|%d %d \n", step, status_code);
+            print_data();
+
+            status = check_status();
+            
+            if(status == 1)
             {
-                printf("#Case%d : bad code\n", count);
+                return 0;
+            }
+            
+            if(status == 2)
+            {
                 break;
             }
         }
     }
-    
-    //fclose(file_stream);
-
-    return 0;
 }
 
-//Checking whether the barcode's boundary match the data format.
-bool boundary_check(void)
+void get_length(void)
 {
-    if( m % (DATA_WIDTH + 1) != DATA_WIDTH ||
-        m < LOWER_WIDTH ||
-        m > UPPER_WIDTH)
+    ++count;
+    fscanf(stdin, "%u", &m);
+    fgetc(stdin);
+
+    n = data_length();
+
+    if(m == 0)
     {
         //Absorbing the input data because of the invalid *m*.
-        scan_code();
+        get_code();
         empty_buffer();
-        return false;
+
+        status_code = STATUS_EXIT_FLAG;
     }
-    
-    return true;
 }
 
 //Scaning numbers of the barcode and the code buffer from original code.
-bool scan_code(void)
+void get_code(void)
 {
     for(each = 0; each < m; ++each)
     {
-        fscanf(stdin, "%d", &code[each]);
+        fscanf(stdin, "%u", &code[each]);
         getc(stdin);
 
         code_buf[each] = code[each];
     }
-
-    return true;
 }
 
 //Sorting the code buffer to take the format easier.
-bool sort_code(void)
+void sort_code(void)
 {
     for(i = 0; i < m - 1; ++i)
     {
@@ -169,12 +178,10 @@ bool sort_code(void)
             }
         }
     }
-
-    return true;
 }
 
 //Constructing the format of numbers
-bool take_format(void)
+void take_format(void)
 {
     static double summation, break_point;
     summation = 0.0;
@@ -192,26 +199,35 @@ bool take_format(void)
     }
 
     summation = 0.0;
-    ++each;
     break_point = each;
-    for(; each < m - 1; ++each)
+    for(each = each + 1; each < m - 1; ++each)
     {
         summation += code_buf[each];
 
         //Returning error when probing two more different value.
         if((code_buf[each + 1] - code_buf[each]) > (bias_upper(code[each]) - bias_lower(code[each])))
         {
-            return false;
+            status_code = STATUS_BAD_FLAG;
+            return;
         }
     }
+    //You have to add the least one to summation to compute the average.
+    summation += code_buf[m - 1];
+
     wide_format = summation / (each - break_point);
     wide_bar = wide_format + 0.5;
 
-    return true;
+    printf("|%lf %lf %lf %lf %lf %d|\n", 
+        wide_format, 
+        bias_lower(narrow_format), 
+        bias_upper(narrow_format), 
+        bias_lower(wide_format), 
+        bias_upper(wide_format), 
+        code[each]);
 }
 
 //Calibrating numbers of the code to conform to the format standard.
-bool calibrate_code(void)
+void calibrate_code(void)
 {
     for(each = 0; each < m; ++each)
     {
@@ -229,14 +245,13 @@ bool calibrate_code(void)
             continue;
         }
 
-        return false;
+        status_code = STATUS_BAD_FLAG;
+        return;
     }
-
-    return true;
 }
 
 //Translating the numbers from decimal to binary.
-bool binary_code(void)
+void binary_code(void)
 {
     for(each = 0; each < m; ++each)
     {
@@ -250,12 +265,10 @@ bool binary_code(void)
             code[each] = 1;
         }
     }
-
-    return true;
 }
 
 //Probing whether the barcode is reverse and its START/STOP are identical.
-bool reverse_code(void)
+void reverse_code(void)
 {
     //Invalid code format when there are difference between START and STOP.
     if(code[0] != code[m - 5] ||
@@ -264,7 +277,8 @@ bool reverse_code(void)
        code[3] != code[m - 2] ||
        code[4] != code[m - 1])
     {
-        return false;
+        status_code = STATUS_BAD_FLAG;
+        return;
     }
 
     //Not reversing the code if the START/STOP aren't reverse as well.
@@ -275,7 +289,7 @@ bool reverse_code(void)
         code[3] &&
        !code[4])
     {
-        return true;
+        return;
     }
 
     //Reversing the code if the START/STOP are reverse as well.
@@ -291,29 +305,15 @@ bool reverse_code(void)
             SWAP(code[i], code[j]);
         }
 
-        return true;
+        return;
     }
 
     //Invalid code format when the START/STOP are unmatched by 00110 or 01100.
-    return false;
-}
-
-bool split_check(void)
-{
-    //Probing whether each split bar is light narrow bar.
-    for(each = 0; each <= n; ++each)
-    {
-        if(code[DATA_WIDTH + each * (DATA_WIDTH + 1)] != 0)
-        {
-            return false;
-        }
-    }
-
-    return true;
+    status_code = STATUS_BAD_FLAG;
 }
 
 //Translating information from binary code to data format.
-bool get_data(void)
+void get_data(void)
 {
     //Getting the data from binary code.
     for(i = 1 + DATA_WIDTH, j = 0;
@@ -328,7 +328,8 @@ bool get_data(void)
     {
         if(!data_decode(each))
         {
-            return false;
+            status_code = STATUS_BAD_FLAG;
+            return;
         }
     }
 
@@ -337,50 +338,10 @@ bool get_data(void)
      *so you can expel them to get original length now.
      */
     n -= 2;
-
-    return true;
-}
-
-bool C_check(void)
-{
-    static uint64_t summation;
-    
-    summation = 0;
-    for(i = 1; i <= n; ++i)
-    {
-        summation += ((n - i) % 10 + 1) * char_to_weight(data[i - 1].character);
-    }
-    summation %= 11;
-
-    if(data[n].character != weight_to_char(summation))
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool K_check(void)
-{
-    static uint64_t summation;
-
-    summation = 0;
-    for(i = 1; i <= n + 1; ++i)
-    {
-        summation += ((n - i + 1) % 9 + 1) * char_to_weight(data[i - 1].character);
-    }
-    summation %= 11;
-
-    if(data[n + 1].character != weight_to_char(summation))
-    {
-        return false;
-    }
-
-    return true;
 }
 
 //Setting the buffer to zero.
-bool empty_buffer(void)
+void empty_buffer(void)
 {
     for(each = 0; each < m; ++each)
     {
@@ -393,7 +354,74 @@ bool empty_buffer(void)
         data[each].character = '\0';
     }
 
-    return true;
+    status_code = STATUS_EMPTY_FLAG;
+}
+
+
+
+
+
+//Checking the correctness code and data.
+//Checking whether the barcode's boundary match the data format.
+void boundary_check(void)
+{
+    if( m % (DATA_WIDTH + 1) != DATA_WIDTH ||
+        m < LOWER_WIDTH ||
+        m > UPPER_WIDTH)
+    {
+        //Absorbing the input data because of the invalid *m*.
+        get_code();
+        empty_buffer();
+
+        status_code = STATUS_BAD_FLAG;
+    }
+}
+
+void split_check(void)
+{
+    //Probing whether each split bar is light narrow bar.
+    for(each = 0; each <= n; ++each)
+    {
+        if(code[DATA_WIDTH + each * (DATA_WIDTH + 1)] != 0)
+        {
+            status_code = STATUS_BAD_FLAG;
+            return;
+        }
+    }
+}
+
+void C_check(void)
+{
+    static uint64_t summation;
+    
+    summation = 0;
+    for(i = 1; i <= n; ++i)
+    {
+        summation += ((n - i) % 10 + 1) * char_to_weight(data[i - 1].character);
+    }
+    summation %= 11;
+
+    if(data[n].character != weight_to_char(summation))
+    {
+        status_code = STATUS_BAD_C_FLAG;
+    }
+}
+
+void K_check(void)
+{
+    static uint64_t summation;
+
+    summation = 0;
+    for(i = 1; i <= n + 1; ++i)
+    {
+        summation += ((n - i + 1) % 9 + 1) * char_to_weight(data[i - 1].character);
+    }
+    summation %= 11;
+
+    if(data[n + 1].character != weight_to_char(summation))
+    {
+        status_code = STATUS_BAD_K_FLAG;
+    }
 }
 
 
@@ -401,35 +429,40 @@ bool empty_buffer(void)
 
 
 //The print function for test.
-bool print_code_buf(void)
+void print_code_buf(void)
 {
+    printf("Case %d: ", count);
+
     for(each = 0; each < m; ++each)
     {
         printf("%3d", code_buf[each]);
     }
 
-    return true;
+    printf("%c", '\n');
 }
 
-bool print_code(void)
+void print_code(void)
 {
+    printf("Case %d: ", count);
+
     for(each = 0; each < m; ++each)
     {
         printf("%3d", code[each]);
     }
 
-    return true;
+    printf("%c", '\n');
 }
 
-bool print_data(void)
+void print_data(void)
 {
-    //* - 2 * means you have to ignore the C check code and K one.
+    printf("Case %d: ", count);
+
     for(each = 0; each < n; ++each)
     {
         printf("%c", data[each].character);
     }
-
-    return true;
+    
+    printf("%c", '\n');
 }
 
 
@@ -437,6 +470,33 @@ bool print_data(void)
 
 
 //The implementation of the internal functions.
+static inline uint8_t check_status(void)
+{
+    switch(status_code)
+    {
+    case STATUS_EMPTY_FLAG:
+        return 0;
+
+    case STATUS_EXIT_FLAG:
+        return 1;
+
+    case STATUS_BAD_FLAG:
+        printf("Case %d: bad code\n", count);
+        return 2;
+
+    case STATUS_BAD_C_FLAG:
+        printf("Case %d: bad C\n", count);
+        return 2;
+
+    case STATUS_BAD_K_FLAG:
+        printf("Case %d: bad K\n", count);
+        return 2;
+
+    default:
+        return 0;
+    }
+}
+
 static inline uint64_t char_to_weight(char ch)
 {
     if(ch == '-')
@@ -480,49 +540,49 @@ static inline uint32_t data_length(void)
     return (m - DATA_WIDTH * 2 - 1) / 6;
 }
 
-static inline bool data_decode(uint32_t index)
+static inline uint32_t data_decode(uint32_t index)
 {
     switch(data[index].character)
     {
-    case  1:     //weight: 00001 | weight summation: 01
+    case  1:    //weight: 00001 | weight summation: 01
         data[index].character = '0';
         break;
-    case 17:     //weight: 10001 | weight summation: 17
+    case 17:    //weight: 10001 | weight summation: 17
         data[index].character = '1';
         break;
-    case  9:     //weight: 01001 | weight summation: 09
+    case  9:    //weight: 01001 | weight summation: 09
         data[index].character = '2';
         break;
-    case 24:     //weight: 11000 | weight summation: 24
+    case 24:    //weight: 11000 | weight summation: 24
         data[index].character = '3';
         break;
-    case  5:     //weight: 00101 | weight summation: 05
+    case  5:    //weight: 00101 | weight summation: 05
         data[index].character = '4';
         break;
-    case 20:     //weight: 10100 | weight summation: 20
+    case 20:    //weight: 10100 | weight summation: 20
         data[index].character = '5';
         break;
-    case 12:     //weight: 01100 | weight summation: 12
+    case 12:    //weight: 01100 | weight summation: 12
         data[index].character = '6';
         break;
-    case  3:     //weight: 00011 | weight summation: 03
+    case  3:    //weight: 00011 | weight summation: 03
         data[index].character = '7';
         break;
-    case 18:     //weight: 10010 | weight summation: 18
+    case 18:    //weight: 10010 | weight summation: 18
         data[index].character = '8';
         break;
-    case 16:     //weight: 10000 | weight summation: 16
+    case 16:    //weight: 10000 | weight summation: 16
         data[index].character = '9';
         break;
-    case  4:     //weight: 00100 | weight summation: 04
+    case  4:    //weight: 00100 | weight summation: 04
         data[index].character = '-';
         break;
-    case  6:     //weight: 00110 | weight summation: 06
+    case  6:    //weight: 00110 | weight summation: 06
         data[index].character = 'S';
         break;
     default:    //Returning false when the weight is invalid.
-        return false;
+        return 0;
     };
 
-    return true;
+    return 1;
 }
