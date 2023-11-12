@@ -27,13 +27,3 @@
 30 30 30 30 30 30 30 30 29 30
 30 30 30 30 31 30 30 30 30 30
 30 30 30 30 30
-
-/*
-        for(each = 0; each < METHOD_STEP - 2; ++each)
-        {
-            if(!method[each]())
-            {
-                printf("#Case%d : bad code\n", count);
-                break;
-            }
-        }*/

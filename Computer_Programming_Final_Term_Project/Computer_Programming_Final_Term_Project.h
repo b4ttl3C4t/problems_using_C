@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define METHOD_STEP 10
+#define METHOD_STEP 12
 
 bool (*volatile const PROCESS[METHOD_STEP])(void);
 

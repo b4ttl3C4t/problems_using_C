@@ -7,15 +7,15 @@
  * The code format as following:
  *  [start character]{split}     |
  *  [data]                       |
- *  [check character_C]{split}   |
- *  [check character_K]{split}   |
- *  [end character]              |
+ *  [stop character]             |
  * 
  * The data format as following:
- *  [encoded character_1]{split} | 
- *  [encoded character_2]{split} | 
- *               ...             | 
+ *  [encoded character_1]{split} |
+ *  [encoded character_2]{split} |
+ *               ...             |
  *  [encoded character_n]{split} |
+ *  [checked character_C]{split} |
+ *  [checked character_K]{split} |
  * 
  * Note that every encoded character is shown with 5 bits
  */
@@ -55,7 +55,7 @@ static data_t   data        [DATA_SIZE] = {'\0'};
 
 //For interative variable.
 static uint32_t each, i, j;
-static uint32_t count, m, length;
+static uint32_t count, m, n;
 
 //For constructing the format standard.
 static double   narrow_format, wide_format;
@@ -74,13 +74,16 @@ bool (*volatile const PROCESS[METHOD_STEP])(void) =
     reverse_code, 
     split_check, 
     get_data, 
+    C_check, 
+    K_check, 
     print_data
 };
 
 //Internal function.
 static inline double    bias_lower      (double);
 static inline double    bias_upper      (double);
-static inline int8_t    char_to_weight  (char);
+static inline uint64_t  char_to_weight  (char);
+static inline char      weight_to_char  (uint64_t);
 static inline void      code_to_data    (uint32_t, uint32_t *);
 static inline bool      data_decode     (uint32_t);
 static inline uint32_t  data_length     (void);
@@ -100,7 +103,7 @@ int main(void)
         fscanf(stdin, "%d", &m);
         fgetc(stdin);
         
-        length = data_length();
+        n = data_length();
 
         if(m == 0)
         {
@@ -115,7 +118,6 @@ int main(void)
                 break;
             }
         }
-        empty_buffer();
     }
     
     //fclose(file_stream);
@@ -298,8 +300,7 @@ bool reverse_code(void)
 bool split_check(void)
 {
     //Probing whether each split bar is light narrow bar.
-    //* + 2 * means that you have to consider the check code C K.
-    for(each = 0; each <= length + 2; ++each)
+    for(each = 0; each <= n; ++each)
     {
         if(code[DATA_WIDTH + each * (DATA_WIDTH + 1)] != 0)
         {
@@ -322,12 +323,56 @@ bool get_data(void)
     }
 
     //Decoding the data to character based on its value.
-    for(each = 0; each < length; ++each)
+    for(each = 0; each < n; ++each)
     {
         if(!data_decode(each))
         {
             return false;
         }
+    }
+
+    /*The check code C and K one are not the original data,
+     *they're just check code, 
+     *so you can expel them to get original length now.
+     */
+    n -= 2;
+
+    return true;
+}
+
+bool C_check(void)
+{
+    static uint64_t summation;
+    
+    summation = 0;
+    for(i = 1; i <= n; ++i)
+    {
+        summation += ((n - i) % 10 + 1) * char_to_weight(data[i - 1].character);
+    }
+    summation %= 11;
+
+    if(data[n].character != weight_to_char(summation))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool K_check(void)
+{
+    static uint64_t summation;
+
+    summation = 0;
+    for(i = 1; i <= n + 1; ++i)
+    {
+        summation += ((n - i + 1) % 9 + 1) * char_to_weight(data[i - 1].character);
+    }
+    summation %= 11;
+
+    if(data[n + 1].character != weight_to_char(summation))
+    {
+        return false;
     }
 
     return true;
@@ -341,7 +386,8 @@ bool empty_buffer(void)
         code[each] = code_buf[each] = 0;
     }
 
-    for(each = 0; each < length; ++each)
+    //Note that the check code C and K are in *data*.
+    for(each = 0; each < n + 2; ++each)
     {
         data[each].character = '\0';
     }
@@ -366,7 +412,11 @@ bool print_code(void)
 
 bool print_data(void)
 {
-    printf("%s", (char *)data);
+    //* - 2 * means you have to ignore the C check code and K one.
+    for(each = 0; each < n; ++each)
+    {
+        printf("%c", data[each].character);
+    }
 
     return true;
 }
@@ -376,12 +426,20 @@ bool print_data(void)
 
 
 //The implementation of the internal functions.
-static inline int8_t char_to_weight(char ch)
+static inline uint64_t char_to_weight(char ch)
 {
     if(ch == '-')
         return 10;
     
     return ch ^ 48;
+}
+
+static inline char weight_to_char(uint64_t i)
+{
+    if(i == 10)
+        return '-';
+    
+    return i ^ 48;
 }
 
 //Getting the lower limit of x.
@@ -408,7 +466,7 @@ static inline void code_to_data(uint32_t index, uint32_t *code_index)
 
 static inline uint32_t data_length(void)
 {
-    return (m - DATA_WIDTH * 4 - 3) / 6;
+    return (m - DATA_WIDTH * 2 - 1) / 6;
 }
 
 static inline bool data_decode(uint32_t index)
