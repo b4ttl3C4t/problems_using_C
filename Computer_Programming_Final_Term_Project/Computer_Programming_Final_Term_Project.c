@@ -1,6 +1,7 @@
 #include "Computer_Programming_Final_Term_Project.h"
 
-#define CODE_SIZE   150
+#define CODE_SIZE   160
+#define DATA_SIZE   32
 #define DATA_WIDTH  6
 #define LOWER_WIDTH 29
 #define METHOD_STEP 7
@@ -18,11 +19,11 @@ static int32_t  code        [CODE_SIZE] = {0};
 static int32_t  code_buf    [CODE_SIZE] = {0};
 static data_t   data        [CODE_SIZE] = {'\0'};
 
-static int32_t  each, i, j;
-static int32_t  count, m;
+static uint32_t each, i, j;
+static uint32_t count, m;
 
 static double   narrow_format, wide_format;
-static int32_t  narrow_bar,    wide_bar;
+static uint32_t narrow_bar,    wide_bar;
 
 static inline void      code_weight     (data_t *);
 static inline void      decode_table    (data_t *);
@@ -90,7 +91,7 @@ double bias_upper(double x)
     return (x + x * 0.05);
 }
 
-//Checking if boundary match the data format.
+//Checking whether the barcode's boundary match the data format.
 bool boundary_check(void)
 {
     if((m % (DATA_WIDTH) == DATA_WIDTH-1) && m >= LOWER_WIDTH)
@@ -117,7 +118,7 @@ bool scan_code(void)
     return true;
 }
 
-//Sorting code buffer to take the format easier.
+//Sorting the code buffer to take the format easier.
 bool sort_code(void)
 {
     for(i = 0; i < m - 1; ++i)
@@ -159,7 +160,7 @@ bool take_format(void)
     {
         summation += code_buf[each];
 
-        //Return error when probing two more different value.
+        //Returning error when probing two more different value.
         if((code_buf[each + 1] - code_buf[each]) > (bias_upper(code[each]) - bias_lower(code[each])))
         {
             return false;
@@ -171,7 +172,7 @@ bool take_format(void)
     return true;
 }
 
-//Calibrating numbers of the code to format.
+//Calibrating numbers of the code to conform to the format standard.
 bool calibrate_code(void)
 {
     for(each = 0; each < m; ++each)
@@ -196,7 +197,7 @@ bool calibrate_code(void)
     return true;
 }
 
-//Translating code from decimal to binary.
+//Translating the numbers from decimal to binary.
 bool binary_code(void)
 {
     for(each = 0; each < m; ++each)
@@ -215,6 +216,7 @@ bool binary_code(void)
     return true;
 }
 
+//Probing whether the barcode is reverse and its START/STOP are identical.
 bool reverse_code(void)
 {
     printf("|%d%d%d%d%d\n|", code[0], code[1], code[2], code[3], code[4]);
