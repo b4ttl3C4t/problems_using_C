@@ -6,6 +6,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define METHOD_STEP 8
+
+bool (*volatile const PROCESS[METHOD_STEP])(void);
+
 bool scan_code       (void);
 bool sort_code       (void);
 bool take_format     (void);
@@ -13,10 +17,11 @@ bool calibrate_code  (void);
 bool binary_code     (void);
 bool reverse_code    (void);
 bool get_data        (void);
+bool empty_buffer    (void);
 
+bool boundary_check  (void);
 bool split_check     (void);
 bool C_check         (void);
 bool K_check         (void);
-bool boundary_check  (void);
 
 #endif
