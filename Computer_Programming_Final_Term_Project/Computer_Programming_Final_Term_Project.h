@@ -15,9 +15,8 @@ bool reverse_code    (void);
 bool get_data        (void);
 
 bool split_check     (void);
-bool C_check         (int32_t [], int32_t);
-bool K_check         (int32_t [], int32_t);
+bool C_check         (void);
+bool K_check         (void);
 bool boundary_check  (void);
-bool decode_table    (int32_t);
 
 #endif
