@@ -76,7 +76,8 @@ bool (*volatile const PROCESS[METHOD_STEP])(void) =
     get_data, 
     C_check, 
     K_check, 
-    print_data
+    print_data, 
+    empty_buffer
 };
 
 //Internal function.
@@ -400,6 +401,16 @@ bool empty_buffer(void)
 
 
 //The print function for test.
+bool print_code_buf(void)
+{
+    for(each = 0; each < m; ++each)
+    {
+        printf("%3d", code_buf[each]);
+    }
+
+    return true;
+}
+
 bool print_code(void)
 {
     for(each = 0; each < m; ++each)

@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define METHOD_STEP 12
+#define METHOD_STEP 13
 
 bool (*volatile const PROCESS[METHOD_STEP])(void);
 
@@ -25,6 +25,7 @@ bool C_check         (void);
 bool K_check         (void);
 
 bool print_code      (void);
+bool print_code_buf  (void);
 bool print_data      (void);
 
 #endif
