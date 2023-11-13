@@ -157,6 +157,11 @@ void get_code(void)
         getc(stdin);
 
         code_buf[each] = code[each];
+        
+        if(code[each] == 0)
+        {
+            status_code = STATUS_BAD_FLAG;
+        }
     }
 }
 
