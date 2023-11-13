@@ -75,7 +75,7 @@ static uint32_t count, m, n;
 static double   narrow_format, wide_format;
 static uint32_t narrow_bar,    wide_bar;
 
-//An array of constant pointers to function (void) returning boolean data type.
+//An array of read-only volatile pointers to function (void) returning nothing.
 //Executing the array step by step to get the information of barcode.
 void (*volatile const PROCESS[METHOD_STEP])(void) = 
 {
@@ -210,15 +210,15 @@ void calibrate_code(void)
 {
     for(each = 0; each < m; ++each)
     {
-        if( bias_lower(narrow_format) < code[each] && 
-            bias_upper(narrow_format) > code[each])
+        if( bias_lower(narrow_bar) < code[each] && 
+            bias_upper(narrow_bar) > code[each])
         {
             code[each] = narrow_bar;
             continue;
         }
         
-        if( bias_lower(wide_format) < code[each] &&
-            bias_upper(wide_format) > code[each])
+        if( bias_lower(wide_bar) < code[each] &&
+            bias_upper(wide_bar) > code[each])
         {
             code[each] = wide_bar;
             continue;
