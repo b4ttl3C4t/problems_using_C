@@ -23,7 +23,6 @@
 #include "Computer_Programming_Final_Term_Project.h"
 
 #define CODE_SIZE   150
-#define TABLE_SIZE  12
 #define DATA_SIZE   32
 #define DATA_WIDTH  5
 #define UPPER_WIDTH 150
