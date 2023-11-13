@@ -314,7 +314,7 @@ void get_data(void)
 
     /*The check code C and K one are not the original data,
      *they're just check code, 
-     *so you can expel them to get original length now.
+     *so you can expel them to get original length.
      */
     n -= 2;
 }
