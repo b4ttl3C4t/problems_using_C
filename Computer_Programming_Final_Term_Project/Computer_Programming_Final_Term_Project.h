@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define METHOD_STEP 14
+#define METHOD_STEP 13
 
 void (*volatile const PROCESS[METHOD_STEP])(void);
 
@@ -18,7 +18,6 @@ void binary_code    (void);
 void reverse_code   (void);
 void get_data       (void);
 void empty_buffer   (void);
-void empty_status   (void);
 
 void boundary_check (void);
 void split_check    (void);

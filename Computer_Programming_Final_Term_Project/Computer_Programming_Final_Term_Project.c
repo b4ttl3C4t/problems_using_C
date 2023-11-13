@@ -1,7 +1,7 @@
 /*
  * Computer_Programming_Final_Term_Project.c
  * 
- * 2023.11.10-2023.11.12, B11215024.
+ * 2023.11.10-2023.11.13, B11215024.
  * This file is for scanning barcode and decoding its numbers to string form.
  * 
  * The code format as following:
@@ -62,6 +62,9 @@ enum STATUS_FLAG
 static uint32_t code        [CODE_SIZE] = {0};
 static uint32_t code_buf    [CODE_SIZE] = {0};
 static data_t   data        [DATA_SIZE] = {'\0'};
+
+//For main process program.
+static uint8_t  step, status;
 static uint8_t  status_code = STATUS_EMPTY_FLAG;
 
 //For interative variable.
@@ -88,8 +91,7 @@ void (*volatile const PROCESS[METHOD_STEP])(void) =
     get_data, 
     C_check, 
     K_check, 
-    print_data, 
-    empty_buffer
+    print_data
 };
 
 //Internal function.
@@ -108,8 +110,6 @@ static inline uint32_t  data_length     (void);
 
 int main(void)
 {
-    uint8_t step, status;
-
     while(1)
     {
         status_code = STATUS_EMPTY_FLAG;
@@ -117,9 +117,6 @@ int main(void)
         for(step = 0; step < METHOD_STEP; ++step)
         {
             PROCESS[step]();
-            printf("|%d %d \n", step, status_code);
-            print_data();
-
             status = check_status();
             
             if(status == 1)
@@ -132,6 +129,8 @@ int main(void)
                 break;
             }
         }
+
+        empty_buffer();
     }
 }
 
@@ -145,10 +144,6 @@ void get_length(void)
 
     if(m == 0)
     {
-        //Absorbing the input data because of the invalid *m*.
-        get_code();
-        empty_buffer();
-
         status_code = STATUS_EXIT_FLAG;
     }
 }
@@ -183,9 +178,9 @@ void sort_code(void)
 //Constructing the format of numbers
 void take_format(void)
 {
-    static double summation, break_point;
-    summation = 0.0;
-    narrow_format = wide_format = 0;
+    static double summation;
+
+    summation = narrow_format = wide_format = 0;
 
     for(each = 0; each < m - 1; ++each)
     {
@@ -198,12 +193,8 @@ void take_format(void)
         }
     }
 
-    summation = 0.0;
-    break_point = each;
     for(each = each + 1; each < m - 1; ++each)
     {
-        summation += code_buf[each];
-
         //Returning error when probing two more different value.
         if((code_buf[each + 1] - code_buf[each]) > (bias_upper(code[each]) - bias_lower(code[each])))
         {
@@ -211,19 +202,7 @@ void take_format(void)
             return;
         }
     }
-    //You have to add the least one to summation to compute the average.
-    summation += code_buf[m - 1];
-
-    wide_format = summation / (each - break_point);
-    wide_bar = wide_format + 0.5;
-
-    printf("|%lf %lf %lf %lf %lf %d|\n", 
-        wide_format, 
-        bias_lower(narrow_format), 
-        bias_upper(narrow_format), 
-        bias_lower(wide_format), 
-        bias_upper(wide_format), 
-        code[each]);
+    wide_bar = wide_format = narrow_bar * 2;
 }
 
 //Calibrating numbers of the code to conform to the format standard.
@@ -472,6 +451,8 @@ void print_data(void)
 //The implementation of the internal functions.
 static inline uint8_t check_status(void)
 {
+    //printf("|%d %d \n", step, status_code);
+
     switch(status_code)
     {
     case STATUS_EMPTY_FLAG:
