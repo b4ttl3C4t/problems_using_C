@@ -72,8 +72,7 @@ static uint32_t each, i, j;
 static uint32_t count, m, n;
 
 //For constructing the format standard.
-static double   narrow_format, wide_format;
-static uint32_t narrow_bar,    wide_bar;
+static uint32_t narrow_bar, wide_bar;
 
 //An array of read-only volatile pointers to function (void) returning nothing.
 //Executing the array step by step to get the information of barcode.
@@ -183,31 +182,27 @@ void sort_code(void)
 //Constructing the format of numbers
 void take_format(void)
 {
-    static double summation;
-
-    summation = narrow_format = wide_format = 0;
-
     for(each = 0; each < m - 1; ++each)
     {
-        summation += code_buf[each];
-        if((code_buf[each + 1] - code_buf[each]) > (bias_upper(code[each]) - bias_lower(code[each])))
+        if((code_buf[each + 1] - code_buf[each]) > (bias_upper(code[each + 1]) - bias_lower(code[each + 1])))
         {
-            narrow_format = summation / (each + 1);
-            narrow_bar = narrow_format + 0.5;
+            narrow_bar = (code_buf[0] + code_buf[each]) >> 1;
             break;
         }
     }
 
+    wide_bar = narrow_bar * 2;
+    printf("|%d %d %d %d %d|\n", code_buf[0], code_buf[each], code_buf[each+1], narrow_bar, wide_bar);
+
+    //Returning error when probing two more different value.
     for(each = each + 1; each < m - 1; ++each)
     {
-        //Returning error when probing two more different value.
-        if((code_buf[each + 1] - code_buf[each]) > (bias_upper(code[each]) - bias_lower(code[each])))
+        if((code_buf[each + 1] - code_buf[each]) > (bias_upper(wide_bar) - bias_lower(wide_bar)))
         {
             status_code = STATUS_BAD_FLAG;
             return;
         }
     }
-    wide_bar = wide_format = narrow_bar * 2;
 }
 
 //Calibrating numbers of the code to conform to the format standard.
