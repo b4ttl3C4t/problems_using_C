@@ -192,8 +192,7 @@ void take_format(void)
     }
 
     wide_bar = narrow_bar * 2;
-    printf("|%d %d %d %d %d|\n", code_buf[0], code_buf[each], code_buf[each+1], narrow_bar, wide_bar);
-
+    
     //Returning error when probing two more different value.
     for(each = each + 1; each < m - 1; ++each)
     {
