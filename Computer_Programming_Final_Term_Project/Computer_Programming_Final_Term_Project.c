@@ -1,7 +1,7 @@
 /*
  * Computer_Programming_Final_Term_Project.c
  * 
- * 2023.11.10-2023.11.13, B11215024.
+ * 2023.11.10-2023.11.16, B11215024.
  * This file is for scanning barcode and decoding its numbers to string form.
  * 
  * The code format as following:
@@ -72,6 +72,7 @@ static uint32_t count, m, n;
 
 //For constructing the format standard.
 static uint32_t narrow_bar, wide_bar;
+static double   min, max;
 
 //An array of read-only volatile pointers to function (void) returning nothing.
 //Executing the array step by step to get the information of barcode.
@@ -127,7 +128,6 @@ int main(void)
                 break;
             }
         }
-
         empty_buffer();
     }
 }
@@ -185,22 +185,15 @@ void take_format(void)
     {
         if((code_buf[each + 1] - code_buf[each]) > (bias_upper(code[each + 1]) - bias_lower(code[each + 1])))
         {
-            narrow_bar = (code_buf[0] + code_buf[each]) >> 1;
             break;
         }
     }
 
-    wide_bar = narrow_bar * 2;
-    
-    //Returning error when probing two more different value.
-    for(each = each + 1; each < m - 1; ++each)
-    {
-        if((code_buf[each + 1] - code_buf[each]) > (bias_upper(wide_bar) - bias_lower(wide_bar)))
-        {
-            status_code = STATUS_BAD_FLAG;
-            return;
-        }
-    }
+    min = ((code_buf[0] * 2     < code_buf[each + 1])? code_buf[0] * 2:     code_buf[each + 1]);
+    max = ( code_buf[each] * 2  > code_buf[m - 1]   )? code_buf[each] * 2:  code_buf[m - 1];
+
+    wide_bar    = (min + max) / 2;
+    narrow_bar  = (min + max) / 4;
 }
 
 //Calibrating numbers of the code to conform to the format standard.
@@ -432,7 +425,7 @@ void print_code(void)
 
 void print_data(void)
 {
-    printf("Case %d: ", count);
+    printf("Case %d: ", 1001-count);
 
     for(each = 0; each < n; ++each)
     {
