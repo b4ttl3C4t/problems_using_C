@@ -188,8 +188,8 @@ void take_format(void)
             break;
         }
     }
-
-    min = ((code_buf[0] * 2     < code_buf[each + 1])? code_buf[0] * 2:     code_buf[each + 1]);
+    
+    min = ((code_buf[0]    * 2  < code_buf[each + 1])? code_buf[0]    * 2:  code_buf[each + 1]);
     max = ( code_buf[each] * 2  > code_buf[m - 1]   )? code_buf[each] * 2:  code_buf[m - 1];
 
     wide_bar    = (min + max) / 2;
