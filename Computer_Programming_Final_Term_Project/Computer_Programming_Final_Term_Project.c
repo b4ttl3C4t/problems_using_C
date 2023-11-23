@@ -371,6 +371,7 @@ void C_check(void)
     }
     summation %= 11;
 
+    //*n* means the position of the check code C.
     if(data[n].character != weight_to_char(summation))
     {
         status_code = STATUS_BAD_C_FLAG;
@@ -388,6 +389,7 @@ void K_check(void)
     }
     summation %= 11;
 
+    //*n + 1* means the position of the check code K.
     if(data[n + 1].character != weight_to_char(summation))
     {
         status_code = STATUS_BAD_K_FLAG;
@@ -425,7 +427,7 @@ void print_code(void)
 
 void print_data(void)
 {
-    printf("Case %d: ", 1001-count);
+    printf("Case %d: ", count);
 
     for(each = 0; each < n; ++each)
     {
