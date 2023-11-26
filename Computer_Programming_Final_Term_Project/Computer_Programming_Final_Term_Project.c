@@ -111,8 +111,10 @@ FILE *fp;
 
 int main(void)
 {
+	#ifdef FILE_STREAM
     fp = fopen("text2.txt", "w+");
-
+	#endif
+	
     while(1)
     {
         status_code = STATUS_EMPTY_FLAG;
@@ -135,7 +137,9 @@ int main(void)
         empty_buffer();
     }
 
+	#ifdef FILE_STREAM
     fclose(fp);
+    #endif
 }
 
 void get_length(void)
@@ -419,9 +423,7 @@ void print_code_buf(void)
 
     fprintf(fp, "%c", '\n');
 
-    return;
-#endif
-
+#else
     printf("Case %d: ", count);
 
     for(each = 0; each < m; ++each)
@@ -430,6 +432,8 @@ void print_code_buf(void)
     }
 
     printf("%c", '\n');
+
+#endif
 }
 
 void print_code(void)
@@ -445,8 +449,8 @@ void print_code(void)
     fprintf(fp, "%c", '\n');
 
     return;
-#endif
 
+#else
     printf("Case %d: ", count);
 
     for(each = 0; each < m; ++each)
@@ -455,6 +459,8 @@ void print_code(void)
     }
 
     printf("%c", '\n');
+    
+#endif
 }
 
 void print_data(void)
@@ -470,8 +476,8 @@ void print_data(void)
     fprintf(fp, "%c", '\n');
 
     return;
-#endif
-
+    
+#else
     printf("Case %d: ", count);
 
     for(each = 0; each < n; ++each)
@@ -480,6 +486,8 @@ void print_data(void)
     }
     
     printf("%c", '\n');
+    
+#endif
 }
 
 
@@ -500,16 +508,28 @@ static inline uint8_t check_status(void)
         return 1;
 
     case STATUS_BAD_FLAG:
-        printf("Case %d: bad code\n", count);
-        return 2;
+        #ifdef FILE_STREAM
+        fprintf(fp, "Case %d: bad code\n", count);
+		#else
+		printf("Case %d: bad code\n", count);
+        #endif
+		return 2;
 
     case STATUS_BAD_C_FLAG:
-        printf("Case %d: bad C\n", count);
-        return 2;
+        #ifdef FILE_STREAM
+        fprintf(fp, "Case %d: bad C\n", count);
+		#else
+		printf("Case %d: bad C\n", count);
+        #endif
+		return 2;
 
     case STATUS_BAD_K_FLAG:
-        printf("Case %d: bad K\n", count);
-        return 2;
+        #ifdef FILE_STREAM
+        fprintf(fp, "Case %d: bad K\n", count);
+        #else
+		printf("Case %d: bad K\n", count);
+        #endif
+		return 2;
 
     default:
         return 0;
