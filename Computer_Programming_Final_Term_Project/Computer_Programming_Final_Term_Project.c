@@ -90,7 +90,7 @@ void (*volatile const PROCESS[METHOD_STEP])(void) =
     get_data, 
     C_check, 
     K_check, 
-    print_data
+    print_code
 };
 
 //Internal function.
@@ -105,10 +105,12 @@ static inline uint32_t  data_length     (void);
 
 
 
-
+FILE *fp;
 
 int main(void)
 {
+    fp = fopen("text2.txt", "w+");
+
     while(1)
     {
         status_code = STATUS_EMPTY_FLAG;
@@ -130,6 +132,8 @@ int main(void)
         }
         empty_buffer();
     }
+
+    fclose(fp);
 }
 
 void get_length(void)
@@ -403,38 +407,38 @@ void K_check(void)
 //The print function for test.
 void print_code_buf(void)
 {
-    printf("Case %d: ", count);
+    fprintf(fp, "Case %d: ", count);
 
     for(each = 0; each < m; ++each)
     {
-        printf("%3d", code_buf[each]);
+        fprintf(fp, "%3d", code_buf[each]);
     }
 
-    printf("%c", '\n');
+    fprintf(fp, "%c", '\n');
 }
 
 void print_code(void)
 {
-    printf("Case %d: ", count);
+    fprintf(fp, "Case %d: ", count);
 
     for(each = 0; each < m; ++each)
     {
-        printf("%3d", code[each]);
+        fprintf(fp, "%3d", code[each]);
     }
 
-    printf("%c", '\n');
+    fprintf(fp, "%c", '\n');
 }
 
 void print_data(void)
 {
-    printf("Case %d: ", count);
+    fprintf(fp, "Case %d: ", count);
 
     for(each = 0; each < n; ++each)
     {
-        printf("%c", data[each].character);
+        fprintf(fp, "%c", data[each].character);
     }
     
-    printf("%c", '\n');
+    fprintf(fp, "%c", '\n');
 }
 
 
