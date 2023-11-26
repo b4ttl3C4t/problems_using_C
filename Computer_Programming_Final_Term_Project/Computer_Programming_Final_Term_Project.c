@@ -22,6 +22,8 @@
 
 #include "Computer_Programming_Final_Term_Project.h"
 
+//#define FILE_STREAM 1
+
 #define CODE_SIZE   150
 #define DATA_SIZE   32
 #define DATA_WIDTH  5
@@ -407,6 +409,7 @@ void K_check(void)
 //The print function for test.
 void print_code_buf(void)
 {
+#ifdef FILE_STREAM
     fprintf(fp, "Case %d: ", count);
 
     for(each = 0; each < m; ++each)
@@ -415,10 +418,23 @@ void print_code_buf(void)
     }
 
     fprintf(fp, "%c", '\n');
+
+    return;
+#endif
+
+    printf("Case %d: ", count);
+
+    for(each = 0; each < m; ++each)
+    {
+        printf("%3d", code_buf[each]);
+    }
+
+    printf("%c", '\n');
 }
 
 void print_code(void)
 {
+#ifdef FILE_STREAM
     fprintf(fp, "Case %d: ", count);
 
     for(each = 0; each < m; ++each)
@@ -427,10 +443,23 @@ void print_code(void)
     }
 
     fprintf(fp, "%c", '\n');
+
+    return;
+#endif
+
+    printf("Case %d: ", count);
+
+    for(each = 0; each < m; ++each)
+    {
+        printf("%3d", code[each]);
+    }
+
+    printf("%c", '\n');
 }
 
 void print_data(void)
 {
+#ifdef FILE_STREAM
     fprintf(fp, "Case %d: ", count);
 
     for(each = 0; each < n; ++each)
@@ -439,6 +468,18 @@ void print_data(void)
     }
     
     fprintf(fp, "%c", '\n');
+
+    return;
+#endif
+
+    printf("Case %d: ", count);
+
+    for(each = 0; each < n; ++each)
+    {
+        printf("%c", data[each].character);
+    }
+    
+    printf("%c", '\n');
 }
 
 
