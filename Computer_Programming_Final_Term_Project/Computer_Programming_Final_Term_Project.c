@@ -22,7 +22,8 @@
 
 #include "Computer_Programming_Final_Term_Project.h"
 
-//#define FILE_STREAM 1
+#define FILE_STREAM_INPUT 1
+//#define FILE_STREAM_OUTPUT 1
 
 #define CODE_SIZE   150
 #define DATA_SIZE   32
@@ -92,7 +93,7 @@ void (*volatile const PROCESS[METHOD_STEP])(void) =
     get_data, 
     C_check, 
     K_check, 
-    print_code
+    print_data
 };
 
 //Internal function.
@@ -107,12 +108,22 @@ static inline uint32_t  data_length     (void);
 
 
 
-FILE *fp;
+#ifdef FILE_STREAM_INPUT
+FILE *fp_input;
+#endif
+
+#ifdef FILE_STREAM_OUTPUT
+FILE *fp_output;
+#endif
 
 int main(void)
 {
-	#ifdef FILE_STREAM
-    fp = fopen("text2.txt", "w+");
+	#ifdef FILE_STREAM_INPUT
+    fp_input = fopen("test.txt", "r");
+	#endif
+
+    #ifdef FILE_STREAM_OUTPUT
+    fp_output = fopen("result.txt", "w");
 	#endif
 	
     while(1)
@@ -137,16 +148,26 @@ int main(void)
         empty_buffer();
     }
 
-	#ifdef FILE_STREAM
-    fclose(fp);
+	#ifdef FILE_STREAM_INPUT
+    fclose(fp_input);
+    #endif
+
+    #ifdef FILE_STREAM_OUTPUT
+    fclose(fp_output);
     #endif
 }
 
 void get_length(void)
 {
     ++count;
+
+#ifdef FILE_STREAM_INPUT
+    fscanf(fp_input, "%u", &m);
+    fgetc(fp_input);
+#else
     fscanf(stdin, "%u", &m);
     fgetc(stdin);
+#endif
 
     n = data_length();
 
@@ -161,8 +182,13 @@ void get_code(void)
 {
     for(each = 0; each < m; ++each)
     {
+#ifdef FILE_STREAM_INPUT
+        fscanf(fp_input, "%u", &code[each]);
+        fgetc(fp_input);
+#else
         fscanf(stdin, "%u", &code[each]);
-        getc(stdin);
+        fgetc(stdin);
+#endif
 
         code_buf[each] = code[each];
         
@@ -413,79 +439,79 @@ void K_check(void)
 //The print function for test.
 void print_code_buf(void)
 {
-#ifdef FILE_STREAM
-    fprintf(fp, "Case %d: ", count);
+#ifdef FILE_STREAM_OUTPUT
+    fprintf(fp_output, "Case %d: ", count);
 
     for(each = 0; each < m; ++each)
     {
-        fprintf(fp, "%3d", code_buf[each]);
+        fprintf(fp_output, "%3d", code_buf[each]);
     }
 
-    fprintf(fp, "%c", '\n');
+    fprintf(fp_output, "%c", '\n');
 
 #else
-    printf("Case %d: ", count);
+    fprintf(stdout, "Case %d: ", count);
 
     for(each = 0; each < m; ++each)
     {
-        printf("%3d", code_buf[each]);
+        fprintf(stdout, "%3d", code_buf[each]);
     }
 
-    printf("%c", '\n');
+    fprintf(stdout, "%c", '\n');
 
 #endif
 }
 
 void print_code(void)
 {
-#ifdef FILE_STREAM
-    fprintf(fp, "Case %d: ", count);
+#ifdef FILE_STREAM_OUTPUT
+    fprintf(fp_output, "Case %d: ", count);
 
     for(each = 0; each < m; ++each)
     {
-        fprintf(fp, "%3d", code[each]);
+        fprintf(fp_output, "%3d", code[each]);
     }
 
-    fprintf(fp, "%c", '\n');
+    fprintf(fp_output, "%c", '\n');
 
     return;
 
 #else
-    printf("Case %d: ", count);
+    fprintf(stdout, "Case %d: ", count);
 
     for(each = 0; each < m; ++each)
     {
-        printf("%3d", code[each]);
+        fprintf(stdout, "%3d", code[each]);
     }
 
-    printf("%c", '\n');
+    fprintf(stdout, "%c", '\n');
     
 #endif
 }
 
 void print_data(void)
 {
-#ifdef FILE_STREAM
-    fprintf(fp, "Case %d: ", count);
+#ifdef FILE_STREAM_OUTPUT
+    fprintf(fp_output, "Case %d: ", count);
 
     for(each = 0; each < n; ++each)
     {
-        fprintf(fp, "%c", data[each].character);
+        fprintf(fp_output, "%c", data[each].character);
     }
     
-    fprintf(fp, "%c", '\n');
+    fprintf(fp_output, "%c", '\n');
 
     return;
     
 #else
-    printf("Case %d: ", count);
+    fprintf(stdout, "Case %d: ", count);
 
     for(each = 0; each < n; ++each)
     {
-        printf("%c", data[each].character);
+        fprintf(stdout, "%c", data[each].character);
     }
     
-    printf("%c", '\n');
+    fprintf(stdout, "%c", '\n');
     
 #endif
 }
@@ -497,7 +523,7 @@ void print_data(void)
 //The implementation of the internal functions.
 static inline uint8_t check_status(void)
 {
-    //printf("|%d %d \n", step, status_code);
+    //fprintf(stdout, "|%d %d \n", step, status_code);
 
     switch(status_code)
     {
@@ -508,26 +534,26 @@ static inline uint8_t check_status(void)
         return 1;
 
     case STATUS_BAD_FLAG:
-        #ifdef FILE_STREAM
-        fprintf(fp, "Case %d: bad code\n", count);
+        #ifdef FILE_STREAM_OUTPUT
+        fprintf(fp_output, "Case %d: bad code\n", count);
 		#else
-		printf("Case %d: bad code\n", count);
+		fprintf(stdout, "Case %d: bad code\n", count);
         #endif
 		return 2;
 
     case STATUS_BAD_C_FLAG:
-        #ifdef FILE_STREAM
-        fprintf(fp, "Case %d: bad C\n", count);
+        #ifdef FILE_STREAM_OUTPUT
+        fprintf(fp_output, "Case %d: bad C\n", count);
 		#else
-		printf("Case %d: bad C\n", count);
+		fprintf(stdout, "Case %d: bad C\n", count);
         #endif
 		return 2;
 
     case STATUS_BAD_K_FLAG:
-        #ifdef FILE_STREAM
-        fprintf(fp, "Case %d: bad K\n", count);
+        #ifdef FILE_STREAM_OUTPUT
+        fprintf(fp_output, "Case %d: bad K\n", count);
         #else
-		printf("Case %d: bad K\n", count);
+		fprintf(stdout, "Case %d: bad K\n", count);
         #endif
 		return 2;
 
