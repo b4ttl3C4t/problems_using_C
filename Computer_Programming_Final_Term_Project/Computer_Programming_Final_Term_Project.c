@@ -1,7 +1,7 @@
 /*
  * Computer_Programming_Final_Term_Project.c
  * 
- * 2023.11.10-2023.11.16, B11215024.
+ * 2023.11.10-2023.11.28, B11215024.
  * This file is for scanning barcode and decoding its numbers to string form.
  * 
  * The code format as following:
@@ -133,6 +133,7 @@ int main(void)
         for(step = 0; step < METHOD_STEP; ++step)
         {
             PROCESS[step]();
+            //printf("|%u|\n", step);
             status = check_status();
             
             if(status == 1)
@@ -228,8 +229,8 @@ void take_format(void)
     min = ((code_buf[0]    * 2  < code_buf[each + 1])? code_buf[0]    * 2:  code_buf[each + 1]);
     max = ( code_buf[each] * 2  > code_buf[m - 1]   )? code_buf[each] * 2:  code_buf[m - 1];
 
-    wide_bar    = (min + max) / 2;
-    narrow_bar  = (min + max) / 4;
+    wide_bar    = (min + max) / 2 + 0.5;
+    narrow_bar  = (min + max) / 4 + 0.25;
 }
 
 //Calibrating numbers of the code to conform to the format standard.
@@ -237,19 +238,23 @@ void calibrate_code(void)
 {
     for(each = 0; each < m; ++each)
     {
-        if( bias_lower(narrow_bar) < code[each] && 
-            bias_upper(narrow_bar) > code[each])
+        if( bias_lower(narrow_bar) <= code[each] && 
+            bias_upper(narrow_bar) >= code[each])
         {
             code[each] = narrow_bar;
             continue;
         }
         
-        if( bias_lower(wide_bar) < code[each] &&
-            bias_upper(wide_bar) > code[each])
+        if( bias_lower(wide_bar) <= code[each] &&
+            bias_upper(wide_bar) >= code[each])
         {
             code[each] = wide_bar;
             continue;
         }
+        /*printf("|%lf %lf %u %lf %lf %u %lf %lf %u|\n", 
+                    bias_lower(narrow_bar), bias_upper(narrow_bar), narrow_bar,
+                    bias_lower(wide_bar), bias_upper(wide_bar), wide_bar, 
+                    min, max, code[each]);*/
 
         status_code = STATUS_BAD_FLAG;
         return;
