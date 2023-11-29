@@ -287,7 +287,7 @@ void binary_code(void)
 //Probing whether the barcode is reverse and its START/STOP are identical.
 void reverse_code(void)
 {
-    register uint32_t each, i, j;
+    register uint32_t i, j;
 
     //Invalid code format when there are difference between START and STOP.
     if(code[0] != code[m - 5] ||
@@ -515,7 +515,7 @@ void print_code(void)
 void print_data(void)
 {
     register uint32_t each;
-    
+
 #ifdef FILE_STREAM_OUTPUT
     fprintf(fp_output, "Case %d: ", count);
 
