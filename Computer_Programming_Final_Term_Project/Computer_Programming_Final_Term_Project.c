@@ -69,13 +69,9 @@ static data_t   data        [DATA_SIZE] = {'\0'};
 static uint8_t  step, status;
 static uint8_t  status_code = STATUS_EMPTY_FLAG;
 
-//For interative variable.
-static uint32_t each, i, j;
+//For interative variable and constructing the format standard.
 static uint32_t count, m, n;
-
-//For constructing the format standard.
 static uint32_t narrow_bar, wide_bar;
-static double   min, max;
 
 //An array of read-only volatile pointers to function (void) returning nothing.
 //Executing the array step by step to get the information of barcode.
@@ -181,6 +177,8 @@ void get_length(void)
 //Scaning numbers of the barcode and the code buffer from original code.
 void get_code(void)
 {
+    register uint32_t each;
+
     for(each = 0; each < m; ++each)
     {
 #ifdef FILE_STREAM_INPUT
@@ -203,6 +201,8 @@ void get_code(void)
 //Sorting the code buffer to take the format easier.
 void sort_code(void)
 {
+    register uint32_t i, j;
+
     for(i = 0; i < m - 1; ++i)
     {
         for(j = 0; j < m - 1; ++j)
@@ -218,6 +218,8 @@ void sort_code(void)
 //Constructing the format of numbers
 void take_format(void)
 {
+    register uint32_t each;
+
     for(each = 0; each < m - 1; ++each)
     {
         if((code_buf[each + 1] - code_buf[each]) > (bias_upper(code[each + 1]) - bias_lower(code[each + 1])))
@@ -226,8 +228,8 @@ void take_format(void)
         }
     }
     
-    min = ((code_buf[0]    * 2  < code_buf[each + 1])? code_buf[0]    * 2:  code_buf[each + 1]);
-    max = ( code_buf[each] * 2  > code_buf[m - 1]   )? code_buf[each] * 2:  code_buf[m - 1];
+    double min = ((code_buf[0]    * 2  < code_buf[each + 1])? code_buf[0]    * 2:  code_buf[each + 1]);
+    double max = ( code_buf[each] * 2  > code_buf[m - 1]   )? code_buf[each] * 2:  code_buf[m - 1];
 
     wide_bar    = (min + max) / 2 + 0.5;
     narrow_bar  = (min + max) / 4 + 0.25;
@@ -236,6 +238,8 @@ void take_format(void)
 //Calibrating numbers of the code to conform to the format standard.
 void calibrate_code(void)
 {
+    register uint32_t each;
+
     for(each = 0; each < m; ++each)
     {
         if( bias_lower(narrow_bar) <= code[each] && 
@@ -264,6 +268,8 @@ void calibrate_code(void)
 //Translating the numbers from decimal to binary.
 void binary_code(void)
 {
+    register uint32_t each;
+
     for(each = 0; each < m; ++each)
     {
         if(code[each] == narrow_bar)
@@ -281,6 +287,8 @@ void binary_code(void)
 //Probing whether the barcode is reverse and its START/STOP are identical.
 void reverse_code(void)
 {
+    register uint32_t each, i, j;
+
     //Invalid code format when there are difference between START and STOP.
     if(code[0] != code[m - 5] ||
        code[1] != code[m - 4] ||
@@ -326,6 +334,8 @@ void reverse_code(void)
 //Translating information from binary code to data format.
 void get_data(void)
 {
+    register uint32_t each, i, j;
+
     //Getting the data from binary code.
     for(i = 1 + DATA_WIDTH, j = 0;
         i < m - DATA_WIDTH;
@@ -354,6 +364,8 @@ void get_data(void)
 //Setting the buffer to zero.
 void empty_buffer(void)
 {
+    register uint32_t each;
+
     for(each = 0; each < m; ++each)
     {
         code[each] = code_buf[each] = 0;
@@ -390,6 +402,8 @@ void boundary_check(void)
 
 void split_check(void)
 {
+    register uint32_t each;
+
     //Probing whether each split bar is light narrow bar.
     for(each = 0; each <= n; ++each)
     {
@@ -403,8 +417,8 @@ void split_check(void)
 
 void C_check(void)
 {
-    static uint64_t summation;
-    
+    register uint32_t summation, i;
+
     summation = 0;
     for(i = 1; i <= n; ++i)
     {
@@ -421,7 +435,7 @@ void C_check(void)
 
 void K_check(void)
 {
-    static uint64_t summation;
+    register uint32_t summation, i;
 
     summation = 0;
     for(i = 1; i <= n + 1; ++i)
@@ -444,6 +458,8 @@ void K_check(void)
 //The print function for test.
 void print_code_buf(void)
 {
+    register uint32_t each;
+
 #ifdef FILE_STREAM_OUTPUT
     fprintf(fp_output, "Case %d: ", count);
 
@@ -469,6 +485,8 @@ void print_code_buf(void)
 
 void print_code(void)
 {
+    register uint32_t each;
+
 #ifdef FILE_STREAM_OUTPUT
     fprintf(fp_output, "Case %d: ", count);
 
@@ -496,6 +514,8 @@ void print_code(void)
 
 void print_data(void)
 {
+    register uint32_t each;
+    
 #ifdef FILE_STREAM_OUTPUT
     fprintf(fp_output, "Case %d: ", count);
 
