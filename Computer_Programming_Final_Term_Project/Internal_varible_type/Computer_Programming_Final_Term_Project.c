@@ -114,13 +114,13 @@ FILE *fp_output;
 
 int main(void)
 {
-	#ifdef FILE_STREAM_INPUT
+#ifdef FILE_STREAM_INPUT
     fp_input = fopen("test.txt", "r");
-	#endif
+#endif
 
-    #ifdef FILE_STREAM_OUTPUT
+#ifdef FILE_STREAM_OUTPUT
     fp_output = fopen("result.txt", "w");
-	#endif
+#endif
 	
     while(1)
     {
@@ -145,13 +145,13 @@ int main(void)
         empty_buffer();
     }
 
-	#ifdef FILE_STREAM_INPUT
+#ifdef FILE_STREAM_INPUT
     fclose(fp_input);
-    #endif
+#endif
 
-    #ifdef FILE_STREAM_OUTPUT
+#ifdef FILE_STREAM_OUTPUT
     fclose(fp_output);
-    #endif
+#endif
 }
 
 void get_length(void)
