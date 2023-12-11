@@ -256,4 +256,15 @@ void merge(double array1[], unsigned int size1,
 
 #ifdef problem_4
 
+#define NAME_LENGTH 20
+
+typedef struct node_s
+{
+	char name[20];
+	node_t *first;
+	node_t *second;
+} node_t;
+
+
+
 #endif
