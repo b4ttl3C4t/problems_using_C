@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #define problem_4 0
@@ -260,11 +262,100 @@ void merge(double array1[], unsigned int size1,
 
 typedef struct node_s
 {
-	char name[20];
-	node_t *first;
-	node_t *second;
+	char name[NAME_LENGTH];
+	struct node_s *left;
+	struct node_s *right;
 } node_t;
 
+void add_node(node_t *);
+void traverse(node_t *);
+node_t *find_node(node_t *, char *);
 
+int main(void)
+{
+	unsigned int count, flag = 1;
+	char str[NAME_LENGTH] = {'\0'};
+	node_t *root = (node_t *)malloc(sizeof(node_t));
+	root->left = NULL;
+	root->right = NULL;
+
+	scanf("%u", &count);
+	getchar();
+	
+	while(count--)
+	{
+		scanf("%s", str);
+		getchar();
+
+		if(flag)
+		{
+			strcpy(root->name, str);
+			flag = 0;
+		}
+		add_node(find_node(root, str));
+	}
+
+	traverse(root);
+}
+
+void add_node(node_t *node)
+{
+	node_t *temp = (node_t *)malloc(sizeof(node_t));
+	temp->left = NULL;
+	temp->right = NULL;
+	scanf("%s", temp->name);
+	getchar();
+
+	if(node->left == NULL)
+	{
+		node->left = temp;
+		//printf("|node->left %s\n", node->left->name);
+		return;
+	}
+	if(node->right == NULL)
+	{
+		node->right = temp;
+		//printf("node->right %s|\n", node->right->name);
+		return;
+	}
+	printf("Wrong input!\n");
+	return;
+}
+
+node_t *find_node(node_t *node, char *str)
+{
+	if(node == NULL) return NULL;
+
+	find_node(node->left, str);
+printf("|%s %s %d|\n", node->name, str, !strcmp(node->name, str));
+	if(!strcmp(node->name, str)) return node;
+	find_node(node->right, str);
+}
+
+void traverse(node_t *node)
+{
+	if(node == NULL) return;
+
+	traverse(node->left);
+	printf("%s\n", node->name);
+	traverse(node->right);
+}
+
+/*
+Input:
+8
+Mary Bob
+Mary Susan
+Bob Tom
+Bob Ken
+Tom Lucy
+Ken Vivian
+Susan John
+John James
+
+Bob James
+Bob John
+Bob Tom
+*/
 
 #endif
