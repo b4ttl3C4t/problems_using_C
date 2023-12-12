@@ -267,9 +267,11 @@ typedef struct node_s
 	struct node_s *right;
 } node_t;
 
+node_t *temp = NULL;
+
 void add_node(node_t *);
 void traverse(node_t *);
-node_t *find_node(node_t *, char *);
+void *find_node(node_t *, char *);
 
 int main(void)
 {
@@ -292,8 +294,8 @@ int main(void)
 			strcpy(root->name, str);
 			flag = 0;
 		}
-		printf("|%p %s|\n", find_node(root, str), find_node(root, str)->name);
-		add_node(find_node(root, str));
+		find_node(root, str);
+		add_node(temp);
 	}
 
 	traverse(root);
@@ -323,12 +325,12 @@ void add_node(node_t *node)
 	return;
 }
 
-node_t *find_node(node_t *node, char *str)
+void *find_node(node_t *node, char *str)
 {
-	if(node == NULL) return NULL;
-	//printf("|%s %s %d|\n", node->name, str, !strcmp(node->name, str));
+	if(node == NULL) return;
+	//printf("|%p %s %s %d|\n", node, node->name, str, !strcmp(node->name, str));
 	find_node(node->left, str);
-	if(!strcmp(node->name, str)) return node;
+	if(!strcmp(node->name, str)) temp = node;
 	find_node(node->right, str);
 }
 
