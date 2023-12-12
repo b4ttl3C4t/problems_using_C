@@ -292,6 +292,7 @@ int main(void)
 			strcpy(root->name, str);
 			flag = 0;
 		}
+		printf("|%p %s|\n", find_node(root, str), find_node(root, str)->name);
 		add_node(find_node(root, str));
 	}
 
@@ -325,9 +326,8 @@ void add_node(node_t *node)
 node_t *find_node(node_t *node, char *str)
 {
 	if(node == NULL) return NULL;
-
+	//printf("|%s %s %d|\n", node->name, str, !strcmp(node->name, str));
 	find_node(node->left, str);
-printf("|%s %s %d|\n", node->name, str, !strcmp(node->name, str));
 	if(!strcmp(node->name, str)) return node;
 	find_node(node->right, str);
 }
