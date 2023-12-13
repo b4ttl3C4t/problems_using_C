@@ -268,15 +268,19 @@ typedef struct node_s
 } node_t;
 
 node_t *temp = NULL;
+unsigned int depth;
 
+//void traverse(node_t *);
 void add_node(node_t *);
-void traverse(node_t *);
-void *find_node(node_t *, char *);
+node_t *find_node(node_t *, char *, unsigned int *);
+node_t *find_root(node_t *, char *, char *);
+unsigned int find_relative(node_t *, char *, char *);
 
 int main(void)
 {
-	unsigned int count, flag = 1;
+	unsigned int count, flag = 1, depth;
 	char str[NAME_LENGTH] = {'\0'};
+	char another_str[NAME_LENGTH] = {'\0'};
 	node_t *root = (node_t *)malloc(sizeof(node_t));
 	root->left = NULL;
 	root->right = NULL;
@@ -288,17 +292,23 @@ int main(void)
 	{
 		scanf("%s", str);
 		getchar();
-
 		if(flag)
 		{
 			strcpy(root->name, str);
 			flag = 0;
 		}
-		find_node(root, str);
+		temp = find_node(root, str, &depth);
 		add_node(temp);
 	}
+//	traverse(root);
+	
+	while(1)
+	{
+		scanf("%s%s", str, another_str);
+		printf("%u", find_relative(root, str, another_str));
+	}
 
-	traverse(root);
+	return 0;
 }
 
 void add_node(node_t *node)
@@ -312,26 +322,33 @@ void add_node(node_t *node)
 	if(node->left == NULL)
 	{
 		node->left = temp;
-		//printf("|node->left %s\n", node->left->name);
 		return;
 	}
 	if(node->right == NULL)
 	{
 		node->right = temp;
-		//printf("node->right %s|\n", node->right->name);
 		return;
 	}
 	printf("Wrong input!\n");
 	return;
 }
 
-void *find_node(node_t *node, char *str)
+node_t *find_node(node_t *node, char *str, unsigned int *depth)
 {
-	if(node == NULL) return;
-	//printf("|%p %s %s %d|\n", node, node->name, str, !strcmp(node->name, str));
-	find_node(node->left, str);
-	if(!strcmp(node->name, str)) temp = node;
-	find_node(node->right, str);
+	if(node == NULL) return NULL;
+	
+	node_t *result;
+	++*depth;
+	
+	if((result = find_node(node->left, str, depth)) != NULL)
+		return result;
+	if(!strcmp(node->name, str))
+		return node;
+	if((result = find_node(node->right, str, depth)) != NULL)
+		return result;
+	
+	--*depth;
+	return NULL;
 }
 
 void traverse(node_t *node)
@@ -343,8 +360,49 @@ void traverse(node_t *node)
 	traverse(node->right);
 }
 
+
+node_t *find_root(node_t *node, char *str, char *match)
+{
+	if(	node == NULL || 
+		!strcmp(node->name, str) ||
+		!strcmp(node->name, match))
+	{
+		return node;
+	}
+	
+	node_t *left  = find_root(node->left,  str, match);
+	node_t *right = find_root(node->right, str, match);
+
+	if((left != NULL) && (right != NULL))
+	{
+		return node;
+	}
+
+	if(left != NULL)
+	{
+		return left;
+	}
+	else /*right != NULL*/
+	{
+		return right;
+	}
+}
+
+unsigned int find_relative(node_t *node, char *str, char *match)
+{
+	unsigned int depth1, depth2;
+	depth1 = depth2 = 0;
+
+	node_t *temp = find_root(node, str, match);
+	find_node(temp, str, &depth1);
+	find_node(temp, match, &depth2);
+
+	return depth1 + depth2 - 2;
+}
+
 /*
 Input:
+
 8
 Mary Bob
 Mary Susan
@@ -358,6 +416,7 @@ John James
 Bob James
 Bob John
 Bob Tom
+
 */
 
 #endif
