@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-#define problem_4 0
+#define problem_6 0
 
 
 
@@ -300,7 +300,6 @@ int main(void)
 		temp = find_node(root, str, &depth);
 		add_node(temp);
 	}
-//	traverse(root);
 	
 	while(1)
 	{
@@ -360,7 +359,6 @@ void traverse(node_t *node)
 	traverse(node->right);
 }
 
-
 node_t *find_root(node_t *node, char *str, char *match)
 {
 	if(	node == NULL || 
@@ -416,6 +414,70 @@ John James
 Bob James
 Bob John
 Bob Tom
+
+*/
+
+#endif
+
+
+
+#ifdef problem_6
+
+#define LENGTH 6
+#define XSTR(x) STR(x)
+#define STR(x)  #x
+
+typedef struct time_table_s
+{
+	char operators[LENGTH];
+	char hours[LENGTH];
+	char minute[LENGTH];
+	char second[LENGTH];
+	char time[LENGTH]
+} time_table_t;
+
+int main(void)
+{
+	time_table_t table = {0};
+	time_table_t bias  = {0};
+
+	char ch;
+
+	while(1)
+	{
+		scanf(	"%"XSTR(LENGTH)"[0-9]%*c"
+				"%"XSTR(LENGTH)"[0-9]%*c"
+				"%"XSTR(LENGTH)"[0-9]%2*c"
+				"%"XSTR(LENGTH)"[a-z.]",
+				table.hours, table.minute, table.second, table.time);
+		getchar();
+		
+		printf("---->%s|%s|%s|%s|\n", table.hours, table.minute, table.second, table.time);
+		while(1)
+		{
+			
+			if((ch = getchar()) == '#')
+			{
+				break;
+			}
+			ungetc(ch, stdin);
+		}getchar();
+	}
+
+	return 0;
+}
+
+/*
+10h13m7s p.m.
+plus 4h2m
+minus 3m2s
+#
+5h10m7s a.m.
+plus 3h8m3s
+plus 2h
+minus 3m
+minus 10s
+#
 
 */
 
