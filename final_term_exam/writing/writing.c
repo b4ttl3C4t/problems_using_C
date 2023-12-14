@@ -423,49 +423,108 @@ Bob Tom
 
 #ifdef problem_6
 
-#define LENGTH 6
-#define XSTR(x) STR(x)
-#define STR(x)  #x
+#define STR_LENGTH 	5
+#define LENGTH 		100
+#define XSTR(x) 	STR(x)
+#define STR(x)  	#x
 
 typedef struct time_table_s
 {
-	char operators[LENGTH];
-	char hours[LENGTH];
-	char minute[LENGTH];
-	char second[LENGTH];
-	char time[LENGTH]
+	char operators[STR_LENGTH+1];
+	int hours;
+	int minute;
+	int second;
+	char time[STR_LENGTH+1];
 } time_table_t;
+
+void scan(time_table_t *);
+void add(time_table_t *, time_table_t *);
+void calibrate(time_table_t *);
 
 int main(void)
 {
 	time_table_t table = {0};
 	time_table_t bias  = {0};
-
+	
 	char ch;
 
 	while(1)
 	{
-		scanf(	"%"XSTR(LENGTH)"[0-9]%*c"
-				"%"XSTR(LENGTH)"[0-9]%*c"
-				"%"XSTR(LENGTH)"[0-9]%2*c"
-				"%"XSTR(LENGTH)"[a-z.]",
-				table.hours, table.minute, table.second, table.time);
-		getchar();
+		scan(&table);
 		
-		printf("---->%s|%s|%s|%s|\n", table.hours, table.minute, table.second, table.time);
+		printf("|%s|%d|%d|%d|%s|\n", table.operators, table.hours, table.minute, table.second, table.time);
+		
 		while(1)
 		{
-			
 			if((ch = getchar()) == '#')
-			{
 				break;
-			}
 			ungetc(ch, stdin);
-		}getchar();
+			
+			scan(&bias);
+			add(&table, &bias);
+			
+			printf("|%s|%d|%d|%d|%s|\n", bias.operators, bias.hours, bias.minute, bias.second, bias.time);
+			//printf("|%s|%d|%d|%d|%s|\n", table.operators, table.hours, table.minute, table.second, table.time);
+		}
+		getchar();
 	}
 
 	return 0;
 }
+
+void scan(time_table_t *table)
+{
+	char buf[LENGTH + 1] = {0};
+	char ptr[LENGTH + 1] = {0};
+	char *token_p;
+	int count = 0;
+	
+	scanf("%"XSTR(STR_LENGTH)"[a-z]", table->operators);
+	getchar();
+	
+	scanf("%"XSTR(LENGTH)"[^\n]", buf);
+	getchar();
+	
+	table->hours = 0;
+	strcpy(ptr, buf);
+	if((token_p = strtok(ptr, "h")) != NULL)
+		sscanf(token_p, "%d", &table->hours);
+	
+	table->minute = 0;
+	count += strlen(token_p);
+	strcpy(ptr, buf + count);
+	if((token_p = strtok(ptr, "m")) != NULL)
+		sscanf(token_p, "%d", &table->minute);
+	
+	table->second = 0;
+	count += strlen(token_p);
+	strcpy(ptr, buf + count);
+	if((token_p = strtok(ptr, "s")) != NULL)
+		sscanf(token_p, "%d", &table->second);
+	
+	count += strlen(token_p);
+	strcpy(ptr, buf + count);
+	if((token_p = strtok(ptr, "\0")) != NULL)
+		sscanf(token_p, "%s", table->time);
+}
+
+void add(time_table_t *table, time_table_t *bias)
+{
+	if(!strcmp(bias->operators, "plus"))
+	{
+		table->hours  += bias->hours;
+		table->minute += bias->minute;
+		table->second += bias->second;
+	}
+	else
+	{
+		table->hours  -= bias->hours;
+		table->minute -= bias->minute;
+		table->second -= bias->second;
+	}
+}
+
+void calibrate(time_table_t *table);
 
 /*
 10h13m7s p.m.
