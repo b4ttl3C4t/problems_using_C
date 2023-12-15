@@ -423,36 +423,34 @@ Bob Tom
 
 #ifdef problem_6
 
-#define STR_LENGTH 	5
-#define LENGTH 		100
 #define XSTR(x) 	STR(x)
 #define STR(x)  	#x
 
 typedef struct time_table_s
 {
-	char operators[STR_LENGTH+1];
 	int hours;
 	int minute;
 	int second;
-	char time[STR_LENGTH+1];
 } time_table_t;
 
 void scan(time_table_t *);
-void add(time_table_t *, time_table_t *);
-void calibrate(time_table_t *);
+void add(time_table_t *, time_table_t *, char *);
+void calibrate(time_table_t *, char *);
 
 int main(void)
 {
 	time_table_t table = {0};
 	time_table_t bias  = {0};
 	
+	char time_table[10] = {0};
+	char bias_operator[10] = {0};
 	char ch;
 
 	while(1)
 	{
 		scan(&table);
-		
-		printf("|%s|%d|%d|%d|%s|\n", table.operators, table.hours, table.minute, table.second, table.time);
+		scanf("%s", time_table);
+		getchar();
 		
 		while(1)
 		{
@@ -460,13 +458,15 @@ int main(void)
 				break;
 			ungetc(ch, stdin);
 			
+			scanf("%s", bias_operator);
+			getchar();
 			scan(&bias);
-			add(&table, &bias);
 			
-			printf("|%s|%d|%d|%d|%s|\n", bias.operators, bias.hours, bias.minute, bias.second, bias.time);
-			//printf("|%s|%d|%d|%d|%s|\n", table.operators, table.hours, table.minute, table.second, table.time);
+			add(&table, &bias, bias_operator);
+			calibrate(&table, time_table);
 		}
-		getchar();
+		
+		printf("%dh%dm%ds %s\n", table.hours, table.minute, table.second, time_table);
 	}
 
 	return 0;
@@ -474,43 +474,32 @@ int main(void)
 
 void scan(time_table_t *table)
 {
-	char buf[LENGTH + 1] = {0};
-	char ptr[LENGTH + 1] = {0};
-	char *token_p;
-	int count = 0;
+	int value;
+	char unit;
 	
-	scanf("%"XSTR(STR_LENGTH)"[a-z]", table->operators);
-	getchar();
+	table->hours = table->minute = table->second = 0;
+	while(scanf("%d%c", &value, &unit) == 2)
+	{
+		switch(unit)
+		{
+			case 'h':
+				table->hours  = value;
+				break;
+			case 'm':
+				table->minute = value;
+				break;
+			case 's':
+				table->second = value;
+				break;
+		}
+	}
 	
-	scanf("%"XSTR(LENGTH)"[^\n]", buf);
-	getchar();
-	
-	table->hours = 0;
-	strcpy(ptr, buf);
-	if((token_p = strtok(ptr, "h")) != NULL)
-		sscanf(token_p, "%d", &table->hours);
-	
-	table->minute = 0;
-	count += strlen(token_p);
-	strcpy(ptr, buf + count);
-	if((token_p = strtok(ptr, "m")) != NULL)
-		sscanf(token_p, "%d", &table->minute);
-	
-	table->second = 0;
-	count += strlen(token_p);
-	strcpy(ptr, buf + count);
-	if((token_p = strtok(ptr, "s")) != NULL)
-		sscanf(token_p, "%d", &table->second);
-	
-	count += strlen(token_p);
-	strcpy(ptr, buf + count);
-	if((token_p = strtok(ptr, "\0")) != NULL)
-		sscanf(token_p, "%s", table->time);
+	//printf("|%dh %dm %ds|\n", table->hours, table->minute, table->second);
 }
 
-void add(time_table_t *table, time_table_t *bias)
+void add(time_table_t *table, time_table_t *bias, char *bias_operator)
 {
-	if(!strcmp(bias->operators, "plus"))
+	if(!strcmp(bias_operator, "plus"))
 	{
 		table->hours  += bias->hours;
 		table->minute += bias->minute;
@@ -524,7 +513,52 @@ void add(time_table_t *table, time_table_t *bias)
 	}
 }
 
-void calibrate(time_table_t *table);
+void calibrate(time_table_t *table, char *time)
+{
+	if(table->second > 60)
+	{
+		table->second -= 60;
+		++table->minute;
+	}
+	else if(table->second < 0)
+	{
+		table->second += 60;
+		--table->minute;
+	}
+	
+	if(table->minute > 60)
+	{
+		table->minute -= 60;
+		++table->hours;
+	}
+	else if(table->minute < 0)
+	{
+		table->second += 60;
+		--table->hours;
+	}
+	
+	if(table->hours > 12)
+	{
+		table->hours -= 12;
+		goto EXCHANGE;
+	}
+	else if(table->hours < 0)
+	{
+		table->hours += 12;
+		goto EXCHANGE;
+	}
+	return;
+	
+EXCHANGE:
+	if(!strcmp(time, "p.m."))
+	{
+		strcpy(time, "a.m.");
+	}
+	else
+	{
+		strcpy(time, "p.m.");
+	}
+}
 
 /*
 10h13m7s p.m.
