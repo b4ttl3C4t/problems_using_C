@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define problem_4 0
+#define problem_5 0
 
 
 
@@ -202,9 +202,123 @@ Q R S T U
 
 #ifdef problem_5
 
+#define SIZE 31
+
+typedef struct
+{
+	int x;
+	int y;
+} Point;
+
+Point pt(int, int);
+void visit(int[][SIZE], Point, unsigned int *);
+void scan(FILE *, int[][SIZE], Point *start);
+void print(int[][SIZE], unsigned int);
+
 int main(void)
 {
+	FILE *fp = fopen("input1.txt", "r");
+	Point start;
+	int maze[SIZE][SIZE] = {0};
+	int i, jewel = 0;
 	
+	start.x = start.y = 0;
+	
+	scan(fp, maze, &start);
+	visit(maze, start, &jewel);
+	print(maze, jewel);
+	
+	fclose(fp);
+	return 0;
+}
+
+Point pt(int x, int y)
+{
+	Point p = {x, y};
+	return p;
+}
+
+void visit(int maze[][SIZE], Point start, unsigned int *jewel)
+{
+	if (maze[start.x][start.y] == 4)
+	{
+		++*jewel;
+		maze[start.x][start.y] = 0;
+	}
+	
+	if (maze[start.x][start.y])
+		return;
+		
+	maze[start.x][start.y] = 3;
+	visit(maze, pt(start.x + 1, start.y), jewel);
+	visit(maze, pt(start.x, start.y + 1), jewel);
+	visit(maze, pt(start.x - 1, start.y), jewel);
+	visit(maze, pt(start.x, start.y - 1), jewel);
+}
+
+void scan(FILE *fp, int maze[][SIZE], Point *start)
+{
+	int i, j;
+	char ch;
+	for (i = 0; i < SIZE; ++i)
+	{
+		for (j = 0; j < SIZE; ++j)
+		{
+			fscanf(fp, "%c", &ch);
+			switch (ch)
+			{
+			case '.':
+				maze[i][j] = 0;
+				break;
+			case 'X':
+				maze[i][j] = 1;
+				break;
+			case '#':
+				maze[i][j] = 2;
+				break;
+			case 'O':
+				maze[i][j] = 4;
+				break;
+			}
+			if (j == 0 && maze[i][j] == 0)
+			{
+				start->x = i;
+				start->y = j;
+			}printf("%c", ch);
+		}printf("\n", ch);
+		fgetc(fp);
+	}printf("\n", ch);
+}
+
+void print(int maze[][SIZE], unsigned int jewel)
+{
+	int i, j;
+	
+	printf("Total jewel : %u\n", jewel);
+	for (i = 0; i < SIZE; i++)
+	{
+		for (j = 0; j < SIZE; j++)
+			switch (maze[i][j])
+			{
+			case 0:
+				printf(".");
+				break;
+			case 1:
+				printf("X");
+				break;
+			case 2:
+				printf("#");
+				break;
+			case 3:
+				printf("@");
+				break;
+			case 4:
+				printf("O");
+				break;
+			}
+		printf("\n");
+	}
+	printf("\n");
 }
 
 #endif

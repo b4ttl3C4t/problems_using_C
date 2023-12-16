@@ -415,8 +415,6 @@ Bob Tom
 
 #ifdef problem_5
 
-#include <stdio.h>
-#include <stdlib.h>
 #define SIZE 11
 
 typedef struct
