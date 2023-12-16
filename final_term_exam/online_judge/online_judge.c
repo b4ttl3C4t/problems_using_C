@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define problem_5 0
+#define problem_6 0
 
 
 
@@ -284,10 +284,10 @@ void scan(FILE *fp, int maze[][SIZE], Point *start)
 			{
 				start->x = i;
 				start->y = j;
-			}printf("%c", ch);
-		}printf("\n", ch);
+			}
+		}
 		fgetc(fp);
-	}printf("\n", ch);
+	}
 }
 
 void print(int maze[][SIZE], unsigned int jewel)
@@ -327,9 +327,32 @@ void print(int maze[][SIZE], unsigned int jewel)
 
 #ifdef problem_6
 
+#define SIZE 9
+
+void scan(FILE *, char[][SIZE]);
+
 int main(void)
 {
+	FILE *fp = fopen("input2.txt", "r");
+	char board[SIZE][SIZE] = {0};
 	
+	scan(fp, board);
+	
+	fclose(fp);
+}
+
+void scan(FILE *fp, char board[][SIZE])
+{
+	int i, j;
+	
+	for(i = 0; i < SIZE; ++i)
+	{
+		for(j = 0; j < SIZE; ++j)
+		{
+			fscanf(fp, "%c", board[i][j]);
+		}
+		fgetc(fp);
+	}
 }
 
 #endif

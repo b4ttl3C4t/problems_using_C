@@ -167,7 +167,6 @@ int main(void)
 			break;
 		}
 	}
-	// for(each = 0; each < size1; ++each)	printf("%lf ", array1[each]);
 	while (1)
 	{
 		fscanf(file2, "%lf", &array2[size2++]);
