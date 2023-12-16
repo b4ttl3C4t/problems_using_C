@@ -329,19 +329,33 @@ void print(int maze[][SIZE], unsigned int jewel)
 
 #define SIZE 9
 
-void scan(FILE *, char[][SIZE]);
+int scan(FILE *, char[][SIZE]);
+int test_row	(char[][SIZE]);
+int test_column	(char[][SIZE]);
+int test_block	(char[][SIZE]);
+int test_piece	(char[][SIZE], int, int);
+void empty_buf	(int []);
 
 int main(void)
 {
 	FILE *fp = fopen("input2.txt", "r");
 	char board[SIZE][SIZE] = {0};
+	int count = 1;
 	
-	scan(fp, board);
+	while(scan(fp, board))
+	{
+		printf("Sudoku %d:", count);
+		if(!test_row(board) || !test_column(board) || !test_block(board))
+			printf("Invaild\n");
+		else
+			printf("Vaild\n");
+		++count;
+	}
 	
 	fclose(fp);
 }
 
-void scan(FILE *fp, char board[][SIZE])
+int scan(FILE *fp, char board[][SIZE])
 {
 	int i, j;
 	
@@ -349,9 +363,125 @@ void scan(FILE *fp, char board[][SIZE])
 	{
 		for(j = 0; j < SIZE; ++j)
 		{
-			fscanf(fp, "%c", board[i][j]);
+			if(fscanf(fp, "%c", &board[i][j]) == EOF)
+			{
+				return 0;
+			}
+			
+			if(board[i][j] == '.')
+			{
+				board[i][j] = 10;
+			}
+			else
+			{
+				board[i][j] ^= 48;
+			}
+			
+			if(j != SIZE - 1)
+			{
+				fgetc(fp);
+			}
 		}
 		fgetc(fp);
+	}
+	fgetc(fp);
+	
+	return 1;
+}
+
+int test_row(char board[][SIZE])
+{
+	int i, j;
+	int count[SIZE + 2] = {0};
+	
+	for(i = 0; i < SIZE; ++i)
+	{
+		for(j = 0; j < SIZE; ++j)
+		{
+			++count[board[i][j]];
+		}
+		for(j = 0; j < SIZE + 1; ++j)
+		{
+			if(count[j] > 1)
+			{
+				return 0;
+			}
+		}
+		empty_buf(count);
+	}
+	return 1;
+}
+
+int test_column(char board[][SIZE])
+{
+	int i, j;
+	int count[SIZE + 2] = {0};
+	
+	for(i = 0; i < SIZE; ++i)
+	{
+		for(j = 0; j < SIZE; ++j)
+		{
+			++count[board[j][i]];
+		}
+		for(j = 0; j < SIZE + 1; ++j)
+		{
+			if(count[j] > 1)
+			{
+				return 0;
+			}
+		}
+		empty_buf(count);
+	}
+	return 1;	
+}
+
+int test_block(char board[][SIZE])
+{
+	int i, j;
+	
+	for(i = 0; i < SIZE; i += 3)
+	{
+		for(j = 0; j < SIZE; j += 3)
+		{
+			if(!test_piece(board, i, j))
+			{
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
+int test_piece(char board[][SIZE], int n, int m)
+{
+	int i, j;
+	int count[SIZE + 2] = {0};
+	
+	for(i = 0; i < 3; ++i)
+	{
+		for(j = 0; j < 3; ++j)
+		{
+			++count[board[n + i][m + j]];
+		}
+		for(j = 0; j < SIZE + 1; ++j)
+		{
+			if(count[j] > 1)
+			{
+				return 0;
+			}
+		}
+		empty_buf(count);
+	}
+	return 1;
+}
+
+void empty_buf(int buf[])
+{
+	int i;
+	
+	for(i = 0; i < SIZE + 1; ++i)
+	{
+		buf[i] = 0;
 	}
 }
 
