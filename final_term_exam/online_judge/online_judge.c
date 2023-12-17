@@ -400,7 +400,7 @@ int test_row(char board[][SIZE])
 		{
 			++count[board[i][j]];
 		}
-		for(j = 0; j < SIZE + 1; ++j)
+		for(j = 1; j <= SIZE; ++j)
 		{
 			if(count[j] > 1)
 			{
@@ -423,7 +423,7 @@ int test_column(char board[][SIZE])
 		{
 			++count[board[j][i]];
 		}
-		for(j = 0; j < SIZE + 1; ++j)
+		for(j = 1; j <= SIZE; ++j)
 		{
 			if(count[j] > 1)
 			{
@@ -463,7 +463,7 @@ int test_piece(char board[][SIZE], int n, int m)
 		{
 			++count[board[n + i][m + j]];
 		}
-		for(j = 0; j < SIZE + 1; ++j)
+		for(j = 1; j <= SIZE; ++j)
 		{
 			if(count[j] > 1)
 			{
@@ -479,7 +479,7 @@ void empty_buf(int buf[])
 {
 	int i;
 	
-	for(i = 0; i < SIZE + 1; ++i)
+	for(i = 1; i <= SIZE; ++i)
 	{
 		buf[i] = 0;
 	}

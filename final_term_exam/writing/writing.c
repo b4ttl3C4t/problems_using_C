@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-#define problem_6 0
+#define problem_3 0
 
 #ifdef problem_1
 
@@ -191,7 +191,6 @@ int main(void)
 		}
 
 		fprintf(result, "%.1lf ", array[each]);
-		printf("%.1lf ", array[each]);
 	}
 
 	return 0;
