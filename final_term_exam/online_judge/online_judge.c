@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define problem_6 0
+#define problem_5 0
 
 
 
